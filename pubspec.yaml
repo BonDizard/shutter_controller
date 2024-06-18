@@ -38,6 +38,9 @@ dependencies:
   flutter_blue_plus: ^1.32.8
   uuid: ^4.4.0
   flutter_riverpod: ^2.5.1
+  flutter_toggle_tab: ^1.4.1
+  simple_animated_button: ^0.0.9
+
 
 dev_dependencies:
   flutter_test:

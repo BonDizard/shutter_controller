@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'dart:io' show Platform;
 
 class BluetoothOffScreen extends StatelessWidget {
   final BluetoothAdapterState bluetoothAdapterState;
@@ -75,7 +76,8 @@ class BluetoothOffScreen extends StatelessWidget {
   }
 
   Future<void> requestBluetoothPermission() async {
-    // Your existing logic for requesting permission
-    // ...
+    if (Platform.isAndroid) {
+      await FlutterBluePlus.turnOn(); // Request the user to turn on Bluetooth
+    }
   }
 }

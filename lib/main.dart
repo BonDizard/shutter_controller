@@ -7,14 +7,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/state/bluetooth_adapter_state_observer.dart';
 import 'features/ui/bluetooth_off_screen.dart';
 import 'features/ui/scan_page.dart';
+import 'features/ui/serial_ble.dart';
 
 void main() {
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-  runApp(ProviderScope(child: const FlutterBlueApp()));
+  runApp(
+    const ProviderScope(
+      child: FlutterBlueApp(),
+    ),
+  );
 }
 
 class FlutterBlueApp extends StatefulWidget {
-  const FlutterBlueApp({Key? key}) : super(key: key);
+  const FlutterBlueApp({super.key});
 
   @override
   State<FlutterBlueApp> createState() => _FlutterBlueAppState();

@@ -1,6 +1,9 @@
 class CommunicationConstant {
-  static const String shutterOnOffToggleKey = 's';
-  static const String autoManualToggleKey = 'e';
-  static const String onTimeKey = 'o';
-  static const String offTimeKey = 'f';
+  static const String shutterOnOffToggleKey = 'S';
+  static const String relayAToggleKey = 'A';
+  static const String relayBToggleKey = 'B';
+  static const String relayCToggleKey = 'C';
+  static const String autoManualToggleKey = 'E';
+  static const String onTimeKey = 'O';
+  static const String offTimeKey = 'F';
 }
