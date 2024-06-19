@@ -23,7 +23,12 @@ final getScannedDeviceProvider = StreamProvider((ref) {
   final bleRepository = ref.watch(bleRepositoryProvider.notifier);
   return bleRepository.scannedDevices;
 });
-
+final connectionStateProvider =
+    StreamProvider.family<BluetoothConnectionState, BluetoothDevice>(
+        (ref, device) {
+  final bleRepository = ref.watch(bleRepositoryProvider.notifier);
+  return bleRepository.getConnectionState(device);
+});
 final readDataFromBLEProvider =
     StreamProvider.family<String, BluetoothDevice>((ref, device) {
   final bleRepository = ref.watch(bleRepositoryProvider.notifier);
@@ -77,6 +82,15 @@ class BleRepository extends StateNotifier<bool> {
     }
     print('done');
     return devs;
+  }
+
+  Stream<BluetoothConnectionState> getConnectionState(
+    BluetoothDevice device,
+  ) async* {
+    // Listen for connection state changes
+    await for (final event in device.connectionState) {
+      yield event; // Emit the connection state event
+    }
   }
 
   Future<void> scan() async {

@@ -28,7 +28,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   TextEditingController offTimeController = TextEditingController();
   bool shutter = false;
   bool autoManual = false;
-  String recivedData = '';
+  String receivedData = '';
   String? selectedUuid;
   List<Map<String, String>> uuidsWithProperties = [];
   late Timer timer;
@@ -36,7 +36,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   String connectButtonText = 'Disconnect';
   BluetoothConnectionState deviceState = BluetoothConnectionState.disconnected;
   StreamSubscription<BluetoothConnectionState>? _stateListener;
-  int _tabTextIconIndexSelected = 0;
+
   @override
   void initState() {
     super.initState();
@@ -108,22 +108,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               // List<int> value = await c.read();
               c.setNotifyValue(true);
               c.lastValueStream.listen((value) {
-                recivedData = String.fromCharCodes(value);
-                //  print('recived data is: $recivedData');
+                receivedData = String.fromCharCodes(value);
               });
 
-              // print('Received value (bytes): $value');
-              setState(() {
-                // Decode received data
-                // recivedData = ascii.decode(value);
-              });
-              print('Decoded data: $recivedData');
+              setState(() {});
+              if (kDebugMode) {
+                print('Decoded data: $receivedData');
+              }
             } else {
               // print('READ property not supported by this characteristic');
             }
           } else {
-            // print(
-            //     'no matching uuid c was ${c.uuid} and selected uid was $selectedUuid');
+            // print('no matching uuid c was ${c.uuid} and selected uid was $selectedUuid');
           }
         }
       }
@@ -173,7 +169,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               style: TextStyle(color: Colors.red, fontSize: 20),
             ),
             Text(
-              recivedData,
+              receivedData,
               style: TextStyle(color: Colors.black),
             ),
             DropdownButton<String>(
