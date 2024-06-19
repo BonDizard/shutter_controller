@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/utils.dart';
 import 'package:shutter/models/parameters_model.dart';
 import '../../core/constants/constants.dart';
 import '../../models/connected_devices.dart';
+import '../ui/screen.dart';
 
 final connectedDevicesProvider =
     StateProvider<ConnectedDevices?>((ref) => null);
@@ -16,7 +18,7 @@ final bleRepositoryProvider = StateNotifierProvider<BleRepository, bool>((ref) {
 });
 final getConnectedDeviceProvider = StreamProvider((ref) {
   final bleRepository = ref.watch(bleRepositoryProvider.notifier);
-  return bleRepository.getConnectedDevice();
+  return bleRepository.getDevicesConnected();
 });
 
 final getScannedDeviceProvider = StreamProvider((ref) {
@@ -47,51 +49,23 @@ class BleRepository extends StateNotifier<bool> {
       _discoveredDevicesController.stream;
 
   final List<BluetoothDevice> discoveredDevices = [];
-  final List<BluetoothDevice> connectedDevices = [];
+  final List<ParametersModel> connectedDevices = [];
 
-  // void getConnectedDevice() {
-  //   final List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
-  //   connectedDevices.clear();
-  //   for (var dev in devs) {
-  //     final de = ParametersModel(
-  //       shutterOnOffToggleValue: false,
-  //       autoManualToggleKey: false,
-  //       onTimeKey: 0.0,
-  //       offTimeKey: 0.0,
-  //       device: dev,
-  //     );
-  //     connectedDevices.add(de);
-  //   }
-  //   final connectedDevs = ConnectedDevices(connectedDevices: connectedDevices);
-  //   _ref
-  //       .read(connectedDevicesProvider.notifier)
-  //       .update((state) => connectedDevs);
-  // }
-  Stream<List<BluetoothDevice>> getConnectedDevice() async* {
-    final List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
-    connectedDevices.clear();
-    connectedDevices.addAll(devs);
-    yield connectedDevices;
-  }
+  Stream<List<BluetoothDevice>> getDevicesConnected() async* {
+    try {
+      // Await the list of connected devices as it is an async call.
+      List<BluetoothDevice> devs = await FlutterBluePlus.connectedDevices;
 
-  List<BluetoothDevice> getDevicesConnected() {
-    List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
-    print('inside the ble');
-    for (var d in devs) {
-      print('devices: $d');
-    }
-    print('done');
-    return devs;
-  }
-
-  Stream<BluetoothConnectionState> getConnectionState(
-    BluetoothDevice device,
-  ) async* {
-    // Listen for connection state changes
-    await for (final event in device.connectionState) {
-      yield event; // Emit the connection state event
+      print('done');
+      yield devs; // Corrected from 'yeild' to 'yield'
+    } catch (e) {
+      // Handle any errors here
+      print('Error: $e');
+      yield []; // Yield an empty list in case of an error
     }
   }
+
+
 
   Future<void> scan() async {
     try {
@@ -100,9 +74,6 @@ class BleRepository extends StateNotifier<bool> {
         timeout: const Duration(seconds: 5),
         androidUsesFineLocation: true,
       );
-
-      print('Scan started.');
-      print('Starting Bluetooth scan...');
 
       // Listen for scan results
       var subscription = FlutterBluePlus.scanResults.listen(
@@ -125,24 +96,16 @@ class BleRepository extends StateNotifier<bool> {
         },
       );
 
-      print('Subscribed to scan results.');
-
       // Cancel the scan subscription when scan completes
       FlutterBluePlus.cancelWhenScanComplete(subscription);
-
-      print('Waiting for Bluetooth adapter to be on...');
 
       // Wait for Bluetooth adapter to be on
       await FlutterBluePlus.adapterState
           .where((state) => state == BluetoothAdapterState.on)
           .first;
 
-      print('Bluetooth adapter is on.');
-
       // Wait until scanning completes (isScanning becomes false)
       await FlutterBluePlus.isScanning.where((isScanning) => !isScanning).first;
-      print('discoveredDevices: $discoveredDevices');
-      print('Scan completed.');
     } catch (e) {
       // Handle any exceptions that occur during scanning
       if (kDebugMode) {
@@ -155,23 +118,49 @@ class BleRepository extends StateNotifier<bool> {
 
   Future<void> connect(
       {required BluetoothDevice device, required BuildContext context}) async {
-    var subscription =
-        device.connectionState.listen((BluetoothConnectionState state) async {
-      if (state == BluetoothConnectionState.connected) {
-        // Remove the device from discoveredDevices upon successful connection
-        discoveredDevices.remove(device);
-        _discoveredDevicesController.add(discoveredDevices);
-        print('Connected to device: ${device.name}');
-      } else if (state == BluetoothConnectionState.disconnected) {
-        if (kDebugMode) {
-          print("disconnected");
+    List<BluetoothService> bluetoothService = [];
+
+    await device.connect(
+      timeout: const Duration(seconds: 10),
+    );
+
+    try {
+      List<BluetoothService> services = [];
+      if (kDebugMode) {
+        print('bluetoothService.isEmpty: ${bluetoothService.isEmpty}');
+      }
+      services = await device.discoverServices(timeout: 10);
+      String readUuid = '';
+      String writeUuid = '';
+      for (var service in services) {
+        for (BluetoothCharacteristic c in service.characteristics) {
+          if (c.properties.notify) readUuid = c.uuid.toString();
+          if (c.properties.writeWithoutResponse) writeUuid = c.uuid.toString();
         }
       }
-    });
 
-    device.cancelWhenDisconnected(subscription, delayed: true, next: true);
+      ParametersModel parametersModel = ParametersModel(
+        device: device,
+        services: services,
+        readUuid: readUuid,
+        writeUuid: writeUuid,
+      );
+      connectedDevices.add(parametersModel);
 
-    await device.connect();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(
+            services: bluetoothService,
+            device: device,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print("Error connecting to device or discovering services: $error");
+      }
+    }
     showSnackBar(context, 'connected');
   }
 

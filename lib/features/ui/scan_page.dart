@@ -72,7 +72,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                       ),
                       error: (error, stackTrace) =>
                           Center(child: Text(error.toString())),
-                      loading: () => const CircularProgressIndicator(),
+                      loading: () => const Center(child: Text('scan devices')),
                     ),
               ),
               Expanded(
@@ -126,34 +126,40 @@ class _ScanPageState extends ConsumerState<ScanPage> {
           error: (error, stackTrace) => const SizedBox(),
           loading: () => const CircularProgressIndicator(),
         ),
-        leading: leading
-            ? FutureBuilder<int>(
-                future: device.readRssi(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data == null) {
-                    if (kDebugMode) {
-                      print('No RSSI data available');
-                    }
-                    return const ListTile(
-                      leading: Icon(Icons.error),
-                      title: Text('No RSSI data'),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data == null) {
-                    if (kDebugMode) {
-                      print('No RSSI data available');
-                    }
-                    return const ListTile(
-                      leading: Icon(Icons.error),
-                      title: Text('No RSSI data'),
-                    );
-                  } else {
-                    final rssi = snapshot.data ??
-                        -100; // Default to a weak signal if null
-                    return getRangeIcon(rssi);
-                  }
-                },
-              )
-            : null, // Use function to determine range icon
+        leading: connectionStatus.when(
+          data: (isConnected) =>
+              isConnected == BluetoothConnectionState.connected
+                  ? FutureBuilder<int>(
+                      future: device.readRssi(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data == null) {
+                          if (kDebugMode) {
+                            print('No RSSI data available');
+                          }
+                          return const ListTile(
+                            leading: Icon(Icons.error),
+                          );
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          if (kDebugMode) {
+                            print('No RSSI data available');
+                          }
+                          return const ListTile(
+                            leading: Icon(Icons.error),
+                          );
+                        } else {
+                          final rssi = snapshot.data ??
+                              -100; // Default to a weak signal if null
+                          return getRangeIcon(rssi);
+                        }
+                      },
+                    )
+                  : const Icon(
+                      Icons.bluetooth_disabled,
+                      color: Colors.red,
+                    ),
+          error: (error, stackTrace) => const SizedBox(),
+          loading: () => const CircularProgressIndicator(),
+        ),
         onTap: () => onTap(device),
       ),
     );

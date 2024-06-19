@@ -1,19 +1,17 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class ParametersModel {
-  final bool shutterOnOffToggleValue;
-  final bool autoManualToggleKey;
-  final double onTimeKey;
-  final double offTimeKey;
   final BluetoothDevice device;
+  final List<BluetoothService> services;
+  final String readUuid;
+  final String writeUuid;
 
 //<editor-fold desc="Data Methods">
   const ParametersModel({
-    required this.shutterOnOffToggleValue,
-    required this.autoManualToggleKey,
-    required this.onTimeKey,
-    required this.offTimeKey,
     required this.device,
+    required this.services,
+    required this.readUuid,
+    required this.writeUuid,
   });
 
   @override
@@ -21,65 +19,57 @@ class ParametersModel {
       identical(this, other) ||
       (other is ParametersModel &&
           runtimeType == other.runtimeType &&
-          shutterOnOffToggleValue == other.shutterOnOffToggleValue &&
-          autoManualToggleKey == other.autoManualToggleKey &&
-          onTimeKey == other.onTimeKey &&
-          offTimeKey == other.offTimeKey &&
-          device == other.device);
+          device == other.device &&
+          services == other.services &&
+          readUuid == other.readUuid &&
+          writeUuid == other.writeUuid);
 
   @override
   int get hashCode =>
-      shutterOnOffToggleValue.hashCode ^
-      autoManualToggleKey.hashCode ^
-      onTimeKey.hashCode ^
-      offTimeKey.hashCode ^
-      device.hashCode;
+      device.hashCode ^
+      services.hashCode ^
+      readUuid.hashCode ^
+      writeUuid.hashCode;
 
   @override
   String toString() {
     return 'ParametersModel{' +
-        ' shutterOnOffToggleValue: $shutterOnOffToggleValue,' +
-        ' autoManualToggleKey: $autoManualToggleKey,' +
-        ' onTimeKey: $onTimeKey,' +
-        ' offTimeKey: $offTimeKey,' +
         ' device: $device,' +
+        ' services: $services,' +
+        ' readUuid: $readUuid,' +
+        ' writeUuid: $writeUuid,' +
         '}';
   }
 
   ParametersModel copyWith({
-    bool? shutterOnOffToggleValue,
-    bool? autoManualToggleKey,
-    double? onTimeKey,
-    double? offTimeKey,
     BluetoothDevice? device,
+    List<BluetoothService>? services,
+    String? readUuid,
+    String? writeUuid,
   }) {
     return ParametersModel(
-      shutterOnOffToggleValue:
-          shutterOnOffToggleValue ?? this.shutterOnOffToggleValue,
-      autoManualToggleKey: autoManualToggleKey ?? this.autoManualToggleKey,
-      onTimeKey: onTimeKey ?? this.onTimeKey,
-      offTimeKey: offTimeKey ?? this.offTimeKey,
       device: device ?? this.device,
+      services: services ?? this.services,
+      readUuid: readUuid ?? this.readUuid,
+      writeUuid: writeUuid ?? this.writeUuid,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'shutterOnOffToggleValue': this.shutterOnOffToggleValue,
-      'autoManualToggleKey': this.autoManualToggleKey,
-      'onTimeKey': this.onTimeKey,
-      'offTimeKey': this.offTimeKey,
       'device': this.device,
+      'services': this.services,
+      'readUuid': this.readUuid,
+      'writeUuid': this.writeUuid,
     };
   }
 
   factory ParametersModel.fromMap(Map<String, dynamic> map) {
     return ParametersModel(
-      shutterOnOffToggleValue: map['shutterOnOffToggleValue'] as bool,
-      autoManualToggleKey: map['autoManualToggleKey'] as bool,
-      onTimeKey: map['onTimeKey'] as double,
-      offTimeKey: map['offTimeKey'] as double,
       device: map['device'] as BluetoothDevice,
+      services: map['services'] as List<BluetoothService>,
+      readUuid: map['readUuid'] as String,
+      writeUuid: map['writeUuid'] as String,
     );
   }
 
