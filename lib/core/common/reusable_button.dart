@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shutter/core/constants/color_constant.dart';
 import 'package:simple_animated_button/elevated_layer_button.dart';
 
 class ReusableButton extends StatelessWidget {
@@ -22,7 +23,13 @@ class ReusableButton extends StatelessWidget {
       animationDuration: const Duration(milliseconds: 200),
       animationCurve: Curves.ease,
       topDecoration: BoxDecoration(
-        color: Colors.amber,
+        color: visibleText == 'S'
+            ? ColorConstants.sColor
+            : visibleText == 'A'
+                ? ColorConstants.aColor
+                : visibleText == 'B'
+                    ? ColorConstants.bColor
+                    : ColorConstants.cColor,
         border: Border.all(),
       ),
       topLayerChild: Text(

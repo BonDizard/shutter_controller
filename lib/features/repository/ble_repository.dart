@@ -1,14 +1,15 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/utils.dart';
+import 'package:shutter/features/ui/device_screen.dart';
 import 'package:shutter/models/parameters_model.dart';
-import '../../core/constants/constants.dart';
+
+import '../../core/constants/color_constant.dart';
 import '../../models/connected_devices.dart';
-import '../ui/screen.dart';
 
 final connectedDevicesProvider =
     StateProvider<ConnectedDevices?>((ref) => null);
@@ -18,7 +19,7 @@ final bleRepositoryProvider = StateNotifierProvider<BleRepository, bool>((ref) {
 });
 final getConnectedDeviceProvider = StreamProvider((ref) {
   final bleRepository = ref.watch(bleRepositoryProvider.notifier);
-  return bleRepository.getDevicesConnected();
+  return bleRepository.getDevicesConnected;
 });
 
 final getScannedDeviceProvider = StreamProvider((ref) {
@@ -31,63 +32,66 @@ final connectionStateProvider =
   final bleRepository = ref.watch(bleRepositoryProvider.notifier);
   return bleRepository.getConnectionState(device);
 });
-final readDataFromBLEProvider =
-    StreamProvider.family<String, BluetoothDevice>((ref, device) {
-  final bleRepository = ref.watch(bleRepositoryProvider.notifier);
-  return bleRepository.read(device: device);
-});
 
 class BleRepository extends StateNotifier<bool> {
   final Ref _ref;
   BleRepository({required Ref ref})
       : _ref = ref,
-        super(true);
+        super(true) {
+    _connectedDevicesController
+        .add(<ParametersModel>[]); // Emit an initial empty list
+  }
 
   final StreamController<List<BluetoothDevice>> _discoveredDevicesController =
       StreamController<List<BluetoothDevice>>.broadcast();
+
   Stream<List<BluetoothDevice>> get scannedDevices =>
       _discoveredDevicesController.stream;
+
+  // StreamController for connected devices
+  final StreamController<List<ParametersModel>> _connectedDevicesController =
+      StreamController<List<ParametersModel>>.broadcast()
+        ..add(<ParametersModel>[]);
 
   final List<BluetoothDevice> discoveredDevices = [];
   final List<ParametersModel> connectedDevices = [];
 
-  Stream<List<BluetoothDevice>> getDevicesConnected() async* {
-    try {
-      // Await the list of connected devices as it is an async call.
-      List<BluetoothDevice> devs = await FlutterBluePlus.connectedDevices;
+  Stream<List<ParametersModel>> get getDevicesConnected =>
+      _connectedDevicesController.stream.map((devices) {
+        if (devices.isEmpty) {
+          // Explicitly send an empty list if no devices are connected
+          return <ParametersModel>[];
+        }
+        return devices;
+      });
 
-      print('done');
-      yield devs; // Corrected from 'yeild' to 'yield'
-    } catch (e) {
-      // Handle any errors here
-      print('Error: $e');
-      yield []; // Yield an empty list in case of an error
+  Stream<BluetoothConnectionState> getConnectionState(
+    BluetoothDevice device,
+  ) async* {
+    // Listen for connection state changes
+    await for (final event in device.connectionState) {
+      yield event; // Emit the connection state event
     }
   }
 
-
-
-  Future<void> scan() async {
+  Future<void> deviceScan() async {
     try {
-      // Start scanning with specified parameters
       await FlutterBluePlus.startScan(
         timeout: const Duration(seconds: 5),
         androidUsesFineLocation: true,
       );
 
-      // Listen for scan results
       var subscription = FlutterBluePlus.scanResults.listen(
         (results) {
+          discoveredDevices.clear(); // Clear once before adding new devices
           for (ScanResult r in results) {
             if (kDebugMode) {
               print(
                   '${r.device.remoteId}: "${r.advertisementData.advName}" found!');
             }
-            discoveredDevices.clear();
-            discoveredDevices.addAll(results.map((r) => r.device).toList());
-            // Emit the updated list of discovered devices
-            _discoveredDevicesController.add(discoveredDevices);
+            discoveredDevices.add(r.device);
           }
+          _discoveredDevicesController.add(discoveredDevices);
         },
         onError: (e) {
           if (kDebugMode) {
@@ -96,40 +100,26 @@ class BleRepository extends StateNotifier<bool> {
         },
       );
 
-      // Cancel the scan subscription when scan completes
-      FlutterBluePlus.cancelWhenScanComplete(subscription);
-
-      // Wait for Bluetooth adapter to be on
-      await FlutterBluePlus.adapterState
-          .where((state) => state == BluetoothAdapterState.on)
-          .first;
-
-      // Wait until scanning completes (isScanning becomes false)
-      await FlutterBluePlus.isScanning.where((isScanning) => !isScanning).first;
+      // Manage scan subscription lifecycle
+      await FlutterBluePlus.isScanning.firstWhere((isScanning) => !isScanning);
+      subscription.cancel();
     } catch (e) {
-      // Handle any exceptions that occur during scanning
       if (kDebugMode) {
         print('Exception during scan: $e');
       }
-      // Optionally re-throw the exception for higher level handling
       throw e;
     }
   }
 
-  Future<void> connect(
+  Future<void> deviceConnect(
       {required BluetoothDevice device, required BuildContext context}) async {
-    List<BluetoothService> bluetoothService = [];
-
-    await device.connect(
-      timeout: const Duration(seconds: 10),
-    );
-
     try {
-      List<BluetoothService> services = [];
-      if (kDebugMode) {
-        print('bluetoothService.isEmpty: ${bluetoothService.isEmpty}');
-      }
-      services = await device.discoverServices(timeout: 10);
+      await device.connect(timeout: const Duration(seconds: 10));
+      var services = await device.discoverServices();
+      // Debug output
+      print("Services discovered: ${services.length}");
+
+      // Process services to find UUIDs
       String readUuid = '';
       String writeUuid = '';
       for (var service in services) {
@@ -140,50 +130,100 @@ class BleRepository extends StateNotifier<bool> {
       }
 
       ParametersModel parametersModel = ParametersModel(
-        device: device,
-        services: services,
-        readUuid: readUuid,
-        writeUuid: writeUuid,
-      );
+          device: device,
+          services: services,
+          readUuid: readUuid,
+          writeUuid: writeUuid);
       connectedDevices.add(parametersModel);
+
+      // Debug output
+      print("Connected Devices Updated: $connectedDevices");
+
+      _connectedDevicesController
+          .add(List<ParametersModel>.from(connectedDevices));
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MainScreen(
-            services: bluetoothService,
-            device: device,
-          ),
+          builder: (context) => DeviceScreen(device: parametersModel),
         ),
       );
+      if (connectedDevices.isNotEmpty) {
+        _connectedDevicesController
+            .add(List<ParametersModel>.from(connectedDevices));
+      } else {
+        _connectedDevicesController.add(<ParametersModel>[]);
+      }
+      showSnackBar(context, 'Connected');
     } catch (error) {
       if (kDebugMode) {
-        print("Error connecting to device or discovering services: $error");
+        print("Error during connect or discovery: $error");
       }
+      showSnackBar(context, 'Connection Failed');
     }
-    showSnackBar(context, 'connected');
   }
 
-  Stream<String> read({required BluetoothDevice device}) async* {
-    print('inside read');
-    final service = await device.discoverServices();
-    for (BluetoothService s in service) {
-      for (BluetoothCharacteristic c in s.characteristics) {
-        await for (final value in c.lastValueStream) {
-          print('value: ${value.toString()}');
-          yield String.fromCharCodes(value);
+  Future<String> deviceRead(
+      {required ParametersModel parametersModel, required String uuid}) async {
+    String receivedData = '';
+    try {
+      for (var service in parametersModel.services) {
+        for (BluetoothCharacteristic c in service.characteristics) {
+          if (c.uuid.toString() == parametersModel.readUuid) {
+            if (c.properties.read || c.properties.notify) {
+              await c.setNotifyValue(true);
+              await for (var value in c.lastValueStream) {
+                receivedData = String.fromCharCodes(value);
+
+                if (kDebugMode) {
+                  print('Decoded data: $receivedData');
+                }
+
+                processReceivedData(receivedString: receivedData);
+                break; // Assuming you want to stop listening after the first received data
+              }
+            } else {
+              if (kDebugMode) {
+                // print('READ property not supported by this characteristic');
+              }
+            }
+          } else {
+            if (kDebugMode) {
+              // print(
+              //     'No matching UUID; characteristic was ${c.uuid} and selected UUID was $parametersModel.readUuid');
+            }
+          }
         }
       }
+    } catch (e) {
+      print('Error while reading: $e');
     }
+    return receivedData;
   }
 
   void processReceivedData({required String receivedString}) {
     try {
-      RegExp shutterRegex = RegExp(r's:([\d.]+)', caseSensitive: false);
-      RegExp autoManualRegex = RegExp(r'e:([\d.]+)', caseSensitive: false);
-      RegExp onTimeRegex = RegExp(r'o:([\d.]+)', caseSensitive: false);
-      RegExp offTimeRegex = RegExp(r'f:([\d.]+)', caseSensitive: false);
+      RegExp shutterRegex = RegExp(r'S:([\d.]+)', caseSensitive: false);
+      RegExp autoManualRegex = RegExp(r'E:([\d.]+)', caseSensitive: false);
+      RegExp onTimeRegex = RegExp(r'O:([\d.]+)', caseSensitive: false);
+      RegExp offTimeRegex = RegExp(r'F:([\d.]+)', caseSensitive: false);
+      RegExp aRegex = RegExp(r'A:([\d.]+)', caseSensitive: false);
+      RegExp bRegex = RegExp(r'B:([\d.]+)', caseSensitive: false);
+      RegExp cRegex = RegExp(r'C:([\d.]+)', caseSensitive: false);
 
+      RegExpMatch? CRegexMatch = cRegex.firstMatch(receivedString);
+      double c = CRegexMatch != null
+          ? double.tryParse(CRegexMatch.group(1)!) ?? 0.0
+          : 0.0;
+
+      RegExpMatch? aRegexMatch = aRegex.firstMatch(receivedString);
+      double a = aRegexMatch != null
+          ? double.tryParse(aRegexMatch.group(1)!) ?? 0.0
+          : 0.0;
+      RegExpMatch? bRegexMatch = bRegex.firstMatch(receivedString);
+      double b = bRegexMatch != null
+          ? double.tryParse(bRegexMatch.group(1)!) ?? 0.0
+          : 0.0;
       RegExpMatch? shutterRegexMatch = shutterRegex.firstMatch(receivedString);
       double shutter = shutterRegexMatch != null
           ? double.tryParse(shutterRegexMatch.group(1)!) ?? 0.0
@@ -201,6 +241,27 @@ class BleRepository extends StateNotifier<bool> {
       double offTime = offTimeMatch != null
           ? double.tryParse(offTimeMatch.group(1)!) ?? 0.0
           : 0.0;
+
+      if (shutter == 0) {
+        ColorConstants.sColor = Colors.red;
+      } else {
+        ColorConstants.sColor = Colors.amber;
+      }
+      if (a == 0) {
+        ColorConstants.aColor = Colors.red;
+      } else {
+        ColorConstants.aColor = Colors.amber;
+      }
+      if (b == 0) {
+        ColorConstants.bColor = Colors.red;
+      } else {
+        ColorConstants.bColor = Colors.amber;
+      }
+      if (c == 0) {
+        ColorConstants.cColor = Colors.red;
+      } else {
+        ColorConstants.cColor = Colors.amber;
+      }
     } catch (e) {
       print('Error processing received data: $e');
     }
@@ -215,19 +276,18 @@ class BleRepository extends StateNotifier<bool> {
     for (var service in services) {
       for (BluetoothCharacteristic c in service.characteristics) {
         if (c.uuid.toString() == uuid) {
-          if (c.properties.writeWithoutResponse) {
+          if (c.properties.writeWithoutResponse || c.properties.write) {
             c.setNotifyValue(true);
-            print('the data sending: $data');
+
             c.write(
               data.codeUnits,
               withoutResponse: true,
             );
-            print('***********************');
           } else {
-            //   print('Write property not supported by this characteristic');
+            print('Write property not supported by this characteristic');
           }
         } else {
-          // print('no matching uuid c was ${c.uuid} and selected uid was ');
+          print('no matching uuid c was ${c.uuid} and selected uid was ');
         }
       }
     }

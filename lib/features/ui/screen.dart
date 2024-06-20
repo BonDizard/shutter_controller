@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:shutter/core/constants/communication_constant.dart';
-import 'package:simple_animated_button/elevated_layer_button.dart';
 
 import '../../core/common/reusable_button.dart';
 import '../repository/ble_repository.dart';

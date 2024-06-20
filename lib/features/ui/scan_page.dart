@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shutter/features/ui/screen.dart';
+
 import '../repository/ble_repository.dart';
+import 'all_device _dashboard.dart';
 
 class ScanPage extends ConsumerStatefulWidget {
   const ScanPage({super.key});
@@ -16,35 +17,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   List<BluetoothService> bluetoothService = [];
 
   void onTap(BluetoothDevice device) async {
-    await device.connect(
-      timeout: const Duration(seconds: 10),
-    );
-
-    try {
-      List<BluetoothService> services = [];
-      if (kDebugMode) {
-        print('bluetoothService.isEmpty: ${bluetoothService.isEmpty}');
-      }
-      services = await device.discoverServices(timeout: 10);
-      setState(() {
-        bluetoothService = services;
-      });
-
-      // Navigate to the amplitude page with the device and services
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(
-            services: bluetoothService,
-            device: device,
-          ),
-        ),
-      );
-    } catch (error) {
-      if (kDebugMode) {
-        print("Error connecting to device or discovering services: $error");
-      }
-    }
+    ref
+        .watch(bleRepositoryProvider.notifier)
+        .deviceConnect(device: device, context: context);
   }
 
   @override
@@ -60,7 +35,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: ref.read(bleRepositoryProvider.notifier).scan,
+                onPressed: ref.read(bleRepositoryProvider.notifier).deviceScan,
                 child: const Text('Scan for Devices'),
               ),
               Expanded(
@@ -68,40 +43,31 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                       data: (devices) => ListView.builder(
                         itemCount: devices.length,
                         itemBuilder: (context, index) =>
-                            buildListTile(devices[index], false),
+                            buildListTile(devices[index]),
                       ),
                       error: (error, stackTrace) =>
                           Center(child: Text(error.toString())),
                       loading: () => const Center(child: Text('scan devices')),
                     ),
               ),
-              Expanded(
-                child: ref.watch(getConnectedDeviceProvider).when(
-                      data: (devices) => devices.isEmpty
-                          ? const Text('No Connected Devices')
-                          : ListView.builder(
-                              itemCount: devices.length,
-                              itemBuilder: (context, index) =>
-                                  buildListTile(devices[index], true),
-                            ),
-                      error: (error, stackTrace) => Center(
-                        child: Text(
-                          error.toString(),
-                          style:
-                              const TextStyle(color: Colors.red, fontSize: 16),
-                        ),
-                      ),
-                      loading: () => const CircularProgressIndicator(),
-                    ),
-              ),
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AllDevicePages(),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget buildListTile(BluetoothDevice device, bool leading) {
+  Widget buildListTile(BluetoothDevice device) {
     // Watch the connection state provider for the specific device
     final connectionStatus = ref.watch(connectionStateProvider(device));
 
@@ -153,10 +119,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                         }
                       },
                     )
-                  : const Icon(
-                      Icons.bluetooth_disabled,
-                      color: Colors.red,
-                    ),
+                  : const SizedBox(),
           error: (error, stackTrace) => const SizedBox(),
           loading: () => const CircularProgressIndicator(),
         ),
