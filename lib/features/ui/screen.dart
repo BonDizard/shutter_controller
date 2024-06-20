@@ -190,7 +190,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               children: [
                 ReusableButton(
                   onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).write(
+                    ref.read(bleRepositoryProvider.notifier).deviceWrite(
                           services: widget.services!,
                           uuid: selectedUuid!,
                           device: widget.device,
@@ -202,7 +202,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 ),
                 ReusableButton(
                   onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).write(
+                    ref.read(bleRepositoryProvider.notifier).deviceWrite(
                           services: widget.services!,
                           uuid: selectedUuid!,
                           device: widget.device,
@@ -214,7 +214,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 ),
                 ReusableButton(
                   onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).write(
+                    ref.read(bleRepositoryProvider.notifier).deviceWrite(
                           services: widget.services!,
                           uuid: selectedUuid!,
                           device: widget.device,
@@ -226,7 +226,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 ),
                 ReusableButton(
                   onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).write(
+                    ref.read(bleRepositoryProvider.notifier).deviceWrite(
                           services: widget.services!,
                           uuid: selectedUuid!,
                           device: widget.device,
@@ -257,7 +257,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   autoManual = index != 0;
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.services!,
                       uuid: selectedUuid!,
                       device: widget.device,
@@ -289,7 +289,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               onPressed: () {
                 print('Sending data to BLE: ${onTimeController.text}');
                 if (offTimeController.text.trim().isNotEmpty) {}
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.services!,
                       uuid: selectedUuid!,
                       device: widget.device,
@@ -297,7 +297,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                           onTimeController.text +
                           CommunicationConstant.autoManualToggleKey,
                     );
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.services!,
                       uuid: selectedUuid!,
                       device: widget.device,
@@ -320,7 +320,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   onTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.services!,
                       uuid: selectedUuid!,
                       device: widget.device,
@@ -342,7 +342,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   offTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.services!,
                       uuid: selectedUuid!,
                       device: widget.device,

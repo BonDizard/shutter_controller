@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/utils.dart';
 import 'package:shutter/features/ui/device_screen.dart';
+import 'package:shutter/features/ui/screen.dart';
 import 'package:shutter/models/parameters_model.dart';
 
 import '../../core/constants/color_constant.dart';
@@ -124,8 +125,11 @@ class BleRepository extends StateNotifier<bool> {
       String writeUuid = '';
       for (var service in services) {
         for (BluetoothCharacteristic c in service.characteristics) {
-          if (c.properties.notify) readUuid = c.uuid.toString();
-          if (c.properties.writeWithoutResponse) writeUuid = c.uuid.toString();
+          print(c.uuid);
+          if (c.properties.notify && readUuid.isEmpty)
+            readUuid = c.uuid.toString();
+          if (c.properties.writeWithoutResponse && writeUuid.isEmpty)
+            writeUuid = c.uuid.toString();
         }
       }
 
@@ -141,7 +145,15 @@ class BleRepository extends StateNotifier<bool> {
 
       _connectedDevicesController
           .add(List<ParametersModel>.from(connectedDevices));
-
+      print('writeUuid: $writeUuid');
+      print('readUuid: $readUuid');
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => MainScreen(device: device, services: services),
+      //   ),
+      // );
+      //
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -184,7 +196,7 @@ class BleRepository extends StateNotifier<bool> {
               }
             } else {
               if (kDebugMode) {
-                // print('READ property not supported by this characteristic');
+                //   print('READ property not supported by this characteristic');
               }
             }
           } else {
@@ -267,7 +279,7 @@ class BleRepository extends StateNotifier<bool> {
     }
   }
 
-  Future<void> write({
+  Future<void> deviceWrite({
     required BluetoothDevice device,
     required String uuid,
     required String data,

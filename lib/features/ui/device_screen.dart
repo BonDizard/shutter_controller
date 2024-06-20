@@ -63,6 +63,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
   @override
   Widget build(BuildContext context) {
     readDataFromDevice(widget.device.device, widget.device.readUuid);
+    print('build write: ${widget.device.writeUuid}');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.device.device.platformName),
@@ -86,9 +87,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 children: [
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).write(
+                      ref.read(bleRepositoryProvider.notifier).deviceWrite(
                             services: widget.device.services,
-                            uuid: widget.device.readUuid,
+                            uuid: widget.device.writeUuid,
                             device: widget.device.device,
                             data: CommunicationConstant.shutterOnOffToggleKey +
                                 CommunicationConstant.autoManualToggleKey,
@@ -98,9 +99,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).write(
+                      ref.read(bleRepositoryProvider.notifier).deviceWrite(
                             services: widget.device.services,
-                            uuid: widget.device.readUuid,
+                            uuid: widget.device.writeUuid,
                             device: widget.device.device,
                             data: CommunicationConstant.relayAToggleKey +
                                 CommunicationConstant.autoManualToggleKey,
@@ -110,9 +111,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).write(
+                      ref.read(bleRepositoryProvider.notifier).deviceWrite(
                             services: widget.device.services,
-                            uuid: widget.device.readUuid,
+                            uuid: widget.device.writeUuid,
                             device: widget.device.device,
                             data: CommunicationConstant.relayBToggleKey +
                                 CommunicationConstant.autoManualToggleKey,
@@ -122,9 +123,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).write(
+                      ref.read(bleRepositoryProvider.notifier).deviceWrite(
                             services: widget.device.services,
-                            uuid: widget.device.readUuid,
+                            uuid: widget.device.writeUuid,
                             device: widget.device.device,
                             data: CommunicationConstant.relayCToggleKey +
                                 CommunicationConstant.autoManualToggleKey,
@@ -157,7 +158,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 setState(() {
                   autoManual = index != 0;
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.device.services,
                       uuid: widget.device.readUuid,
                       device: widget.device.device,
@@ -184,7 +185,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
               onPressed: () {
                 print('Sending data to BLE: ${onTimeController.text}');
                 if (offTimeController.text.trim().isNotEmpty) {}
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.device.services!,
                       uuid: widget.device.readUuid,
                       device: widget.device.device,
@@ -192,7 +193,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                           onTimeController.text +
                           CommunicationConstant.autoManualToggleKey,
                     );
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.device.services,
                       uuid: widget.device.readUuid,
                       device: widget.device.device,
@@ -221,7 +222,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 setState(() {
                   onTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.device.services,
                       uuid: widget.device.readUuid,
                       device: widget.device.device,
@@ -246,7 +247,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 setState(() {
                   offTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).write(
+                ref.read(bleRepositoryProvider.notifier).deviceWrite(
                       services: widget.device.services,
                       uuid: widget.device.readUuid,
                       device: widget.device.device,
