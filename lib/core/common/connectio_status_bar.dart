@@ -7,19 +7,21 @@ import '../../features/repository/ble_repository.dart'; // Assuming you use flut
 class ConnectionStatusIndicator extends ConsumerWidget {
   final BluetoothDevice device;
 
-  const ConnectionStatusIndicator({Key? key, required this.device})
-      : super(key: key);
+  const ConnectionStatusIndicator({super.key, required this.device});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(connectionStateProvider(device)).when(
-          data: (BluetoothConnectionState state) => Icon(
-            state == BluetoothConnectionState.connected
-                ? Icons.bluetooth_connected
-                : Icons.bluetooth_disabled,
-            color: state == BluetoothConnectionState.connected
-                ? Colors.green
-                : Colors.red,
+          data: (BluetoothConnectionState state) => Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(
+              state == BluetoothConnectionState.connected
+                  ? Icons.bluetooth_connected
+                  : Icons.bluetooth_disabled,
+              color: state == BluetoothConnectionState.connected
+                  ? Colors.green
+                  : Colors.red,
+            ),
           ),
           error: (error, stackTrace) =>
               const Icon(Icons.error, color: Colors.orange),

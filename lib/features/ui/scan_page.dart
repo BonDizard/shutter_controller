@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/common/loading.dart';
 import '../repository/ble_repository.dart';
 
 class ScanPage extends ConsumerStatefulWidget {
@@ -13,19 +14,19 @@ class ScanPage extends ConsumerStatefulWidget {
 }
 
 class _ScanPageState extends ConsumerState<ScanPage> {
-  List<BluetoothService> bluetoothService = [];
-
-  void onTap(BluetoothDevice device) async {
+  void onTappingTheDeviceConnectToIt(
+      {required BluetoothDevice selectedDevice}) async {
     ref
         .watch(bleRepositoryProvider.notifier)
-        .deviceConnect(device: device, context: context);
+        .connectToDevice(selectedDevice: selectedDevice, context: context);
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = ref.watch(bleRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BLE Demo'),
+        title: const Text('spec-rule'),
       ),
       body: Center(
         child: Padding(
@@ -37,18 +38,22 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                 onPressed: ref.read(bleRepositoryProvider.notifier).deviceScan,
                 child: const Text('Scan for Devices'),
               ),
-              Expanded(
-                child: ref.watch(getScannedDeviceProvider).when(
-                      data: (devices) => ListView.builder(
-                        itemCount: devices.length,
-                        itemBuilder: (context, index) =>
-                            buildListTile(devices[index]),
-                      ),
-                      error: (error, stackTrace) =>
-                          Center(child: Text(error.toString())),
-                      loading: () => const Center(child: Text('scan devices')),
+              isLoading
+                  ? const Loader()
+                  : Expanded(
+                      child: ref.watch(getScannedDeviceProvider).when(
+                            data: (devices) => ListView.builder(
+                              itemCount: devices.length,
+                              itemBuilder: (context, index) =>
+                                  buildListTile(devices[index]),
+                            ),
+                            error: (error, stackTrace) =>
+                                Center(child: Text(error.toString())),
+                            loading: () =>
+                                const Center(child: Text('scan devices')),
+                          ),
                     ),
-              ),
+              const Divider(color: Colors.white),
             ],
           ),
         ),
@@ -112,7 +117,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
           error: (error, stackTrace) => const SizedBox(),
           loading: () => const CircularProgressIndicator(),
         ),
-        onTap: () => onTap(device),
+        onTap: () => onTappingTheDeviceConnectToIt(selectedDevice: device),
       ),
     );
   }

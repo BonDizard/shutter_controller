@@ -1,16 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:shutter/features/theme/provider.dart';
 import 'features/state/bluetooth_adapter_state_observer.dart';
 import 'features/ui/bluetooth_off_screen.dart';
 import 'features/ui/scan_page.dart';
-import 'features/ui/serial_ble.dart';
 
 void main() {
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     const ProviderScope(
       child: FlutterBlueApp(),
@@ -54,8 +53,15 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
         : BluetoothOffScreen(bluetoothAdapterState: _adapterState);
 
     return MaterialApp(
-      color: Colors.lightBlue,
+      debugShowCheckedModeBanner: false,
+      title: 'Dark Theme',
+
+      themeMode: ThemeMode.system,
+
+      //Our custom theme applied
+      darkTheme: UiProvider.darkTheme,
       home: screen,
+      theme: UiProvider.lightTheme,
       navigatorObservers: [BluetoothAdapterStateObserver()],
     );
   }
