@@ -33,12 +33,7 @@ class ParametersModel {
 
   @override
   String toString() {
-    return 'ParametersModel{' +
-        ' device: $device,' +
-        ' services: $services,' +
-        ' readUuid: $readUuid,' +
-        ' writeUuid: $writeUuid,' +
-        '}';
+    return 'ParametersModel{ device: $device, services: $services, readUuid: $readUuid, writeUuid: $writeUuid,}';
   }
 
   ParametersModel copyWith({
@@ -57,10 +52,10 @@ class ParametersModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'device': this.device,
-      'services': this.services,
-      'readUuid': this.readUuid,
-      'writeUuid': this.writeUuid,
+      'device': device,
+      'services': services,
+      'readUuid': readUuid,
+      'writeUuid': writeUuid,
     };
   }
 

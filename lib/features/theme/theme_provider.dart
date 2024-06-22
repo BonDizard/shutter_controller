@@ -10,6 +10,10 @@ class UiProvider {
     primaryColorDark: Colors.black12,
     shadowColor: Colors.white,
     scaffoldBackgroundColor: kPrimary,
+    drawerTheme: DrawerThemeData(
+      elevation: 4,
+      backgroundColor: kPrimary,
+    ),
     listTileTheme: ListTileThemeData(
       subtitleTextStyle: const TextStyle(
         color: Colors.white30,

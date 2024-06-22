@@ -7,13 +7,15 @@ import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/core/common/reusable_slider.dart';
 import 'package:shutter/core/constants/ble_constants.dart';
+import 'package:shutter/core/constants/constants.dart';
 import '../../core/common/connectio_status_bar.dart';
 import '../../core/common/custom_toast.dart';
+import '../../core/common/drawer.dart';
 import '../../core/common/reusable_button.dart';
 import '../../core/common/reusable_text_form_field.dart';
 import '../../core/constants/communication_constant.dart';
 import '../../models/parameters_model.dart';
-import '../repository/ble_repository.dart';
+import '../repository/bluetooth_provider.dart';
 
 class DeviceScreen extends ConsumerStatefulWidget {
   final ParametersModel device;
@@ -32,21 +34,13 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
 
   final Logger logger = Logger();
 
-  bool autoManual = false;
   String receivedData = '';
-
-  BluetoothConnectionState deviceState = BluetoothConnectionState.disconnected;
-  StreamSubscription<BluetoothConnectionState>? _stateListener;
 
   double onTimeSliderValue = 0;
   double offTimeSliderValue = 0;
 
   @override
   void dispose() {
-    // Release the state listener
-    _stateListener?.cancel();
-    // Disconnect
-
     if (kDebugMode) {
       print('Disposing MainScreen');
     }
@@ -56,9 +50,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
   }
 
   Future<void> readDataFromDevice(BluetoothDevice device, String uuid) async {
-    var data = await ref
-        .watch(bleRepositoryProvider.notifier)
-        .readTheDataFromDevice(parametersModel: widget.device, uuid: uuid);
+    final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+    var data = await bluetoothNotifier.readTheDataFromDevice(
+        parametersModel: widget.device, uuid: uuid, context: context);
     if (mounted) {
       setState(() {
         receivedData = data;
@@ -68,13 +62,17 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+
     readDataFromDevice(widget.device.device, widget.device.readUuid);
     // if (kDebugMode) {
     //   print('build read: ${widget.device.readUuid}');
     //   print('build write: ${widget.device.writeUuid}');
     // }
     return Scaffold(
-      backgroundColor: Colors.black12,
+      drawer: CustomDrawer(
+        parametersModel: widget.device,
+      ),
       appBar: AppBar(
         title: Text('Device: ${widget.device.device.platformName}'),
         actions: [
@@ -86,9 +84,22 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: 200,
-              child: Image.asset('assets/images/app_logo/logo_dark.png'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                height: 150,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/images/app_logo/logo.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ),
             Text(
               receivedData,
@@ -101,49 +112,49 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 children: [
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                            services: widget.device.services,
-                            uuid: widget.device.writeUuid,
-                            device: widget.device.device,
-                            data: CommunicationConstant.shutterOnOffToggleKey +
-                                CommunicationConstant.autoManualToggleKey,
-                          );
+                      bluetoothNotifier.writeToDevice(
+                        services: widget.device.services,
+                        uuid: widget.device.writeUuid,
+                        device: widget.device.device,
+                        data: CommunicationConstant.shutterOnOffToggleKey +
+                            CommunicationConstant.autoManualToggleKey,
+                      );
                     },
                     visibleText: 'S',
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                            services: widget.device.services,
-                            uuid: widget.device.writeUuid,
-                            device: widget.device.device,
-                            data: CommunicationConstant.relayAToggleKey +
-                                CommunicationConstant.autoManualToggleKey,
-                          );
+                      bluetoothNotifier.writeToDevice(
+                        services: widget.device.services,
+                        uuid: widget.device.writeUuid,
+                        device: widget.device.device,
+                        data: CommunicationConstant.relayAToggleKey +
+                            CommunicationConstant.autoManualToggleKey,
+                      );
                     },
                     visibleText: 'A',
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                            services: widget.device.services,
-                            uuid: widget.device.writeUuid,
-                            device: widget.device.device,
-                            data: CommunicationConstant.relayBToggleKey +
-                                CommunicationConstant.autoManualToggleKey,
-                          );
+                      bluetoothNotifier.writeToDevice(
+                        services: widget.device.services,
+                        uuid: widget.device.writeUuid,
+                        device: widget.device.device,
+                        data: CommunicationConstant.relayBToggleKey +
+                            CommunicationConstant.autoManualToggleKey,
+                      );
                     },
                     visibleText: 'B',
                   ),
                   ReusableButton(
                     onButtonClick: () {
-                      ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                            services: widget.device.services,
-                            uuid: widget.device.writeUuid,
-                            device: widget.device.device,
-                            data: CommunicationConstant.relayCToggleKey +
-                                CommunicationConstant.autoManualToggleKey,
-                          );
+                      bluetoothNotifier.writeToDevice(
+                        services: widget.device.services,
+                        uuid: widget.device.writeUuid,
+                        device: widget.device.device,
+                        data: CommunicationConstant.relayCToggleKey +
+                            CommunicationConstant.autoManualToggleKey,
+                      );
                     },
                     visibleText: 'C',
                   ),
@@ -156,28 +167,22 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
             FlutterToggleTab(
               width: 70,
               borderRadius: 15,
-              selectedTextStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              unSelectedTextStyle: const TextStyle(
-                color: Colors.blue,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
+              selectedBackgroundColors: [kTertiary],
+              unSelectedBackgroundColors: [kSecondary],
+              selectedTextStyle: Theme.of(context).textTheme.headlineLarge,
+              unSelectedTextStyle: Theme.of(context).textTheme.bodyLarge,
               labels: const ['Auto', 'Manual'],
-              selectedIndex: autoManual ? 1 : 0,
+              selectedIndex: BLEConstants.autoManualToggleKey ? 1 : 0,
               selectedLabelIndex: (index) {
                 setState(() {
-                  autoManual = index != 0;
+                  BLEConstants.autoManualToggleKey = index != 0;
                 });
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.device.services,
-                      uuid: widget.device.readUuid,
-                      device: widget.device.device,
-                      data: CommunicationConstant.autoManualToggleKey,
-                    );
+                bluetoothNotifier.writeToDevice(
+                  services: widget.device.services,
+                  uuid: widget.device.readUuid,
+                  device: widget.device.device,
+                  data: CommunicationConstant.autoManualToggleKey,
+                );
               },
             ),
             const SizedBox(
@@ -185,6 +190,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
             ),
             Card(
               elevation: 4.0,
+              color: kTertiary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
@@ -194,13 +200,10 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
                         'On Time',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineLarge,
                       ),
                     ),
                     const SizedBox(height: 8.0),
@@ -219,9 +222,12 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                             Text(
                               BLEConstants.onTimeReceivedFromBleDevice
                                   .toString(),
-                              style: const TextStyle(fontSize: 20),
+                              style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            const Text('Received Value'),
+                            Text(
+                              'Received Value',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ],
                         ),
                         TextButton(
@@ -236,16 +242,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                                 'on Time Empty',
                               );
                             }
-                            ref
-                                .read(bleRepositoryProvider.notifier)
-                                .writeToDevice(
-                                  services: widget.device.services,
-                                  uuid: widget.device.readUuid,
-                                  device: widget.device.device,
-                                  data: CommunicationConstant.onTimeKey +
-                                      onTimeController.text +
-                                      CommunicationConstant.autoManualToggleKey,
-                                );
+                            bluetoothNotifier.writeToDevice(
+                              services: widget.device.services,
+                              uuid: widget.device.readUuid,
+                              device: widget.device.device,
+                              data: CommunicationConstant.onTimeKey +
+                                  onTimeController.text +
+                                  CommunicationConstant.autoManualToggleKey,
+                            );
                           },
                           child: const Icon(
                             Icons.send,
@@ -265,14 +269,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                           onTimeSliderValue = value;
                           onTimeController.text = onTimeSliderValue.toString();
                         });
-                        ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                              services: widget.device.services,
-                              uuid: widget.device.readUuid,
-                              device: widget.device.device,
-                              data: value.toString() +
-                                  CommunicationConstant.onTimeKey +
-                                  CommunicationConstant.autoManualToggleKey,
-                            );
+                        bluetoothNotifier.writeToDevice(
+                          services: widget.device.services,
+                          uuid: widget.device.readUuid,
+                          device: widget.device.device,
+                          data: value.toString() +
+                              CommunicationConstant.onTimeKey +
+                              CommunicationConstant.autoManualToggleKey,
+                        );
                       },
                     ),
                   ],
@@ -284,6 +288,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
             ),
             Card(
               elevation: 4.0,
+              color: kTertiary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
@@ -293,13 +298,10 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
                         'Off Time',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineLarge,
                       ),
                     ),
                     const SizedBox(height: 8.0),
@@ -318,9 +320,12 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                             Text(
                               BLEConstants.onTimeReceivedFromBleDevice
                                   .toString(),
-                              style: const TextStyle(fontSize: 20),
+                              style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            const Text('Received Value'),
+                            Text(
+                              'Received Value',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ],
                         ),
                         TextButton(
@@ -335,16 +340,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                                 'off Time Empty',
                               );
                             }
-                            ref
-                                .read(bleRepositoryProvider.notifier)
-                                .writeToDevice(
-                                  services: widget.device.services,
-                                  uuid: widget.device.writeUuid,
-                                  device: widget.device.device,
-                                  data: CommunicationConstant.onTimeKey +
-                                      offTimeController.text +
-                                      CommunicationConstant.autoManualToggleKey,
-                                );
+                            bluetoothNotifier.writeToDevice(
+                              services: widget.device.services,
+                              uuid: widget.device.writeUuid,
+                              device: widget.device.device,
+                              data: CommunicationConstant.onTimeKey +
+                                  offTimeController.text +
+                                  CommunicationConstant.autoManualToggleKey,
+                            );
                           },
                           child: const Icon(
                             Icons.send,
@@ -365,14 +368,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                           offTimeController.text =
                               offTimeSliderValue.toString();
                         });
-                        ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                              services: widget.device.services,
-                              uuid: widget.device.readUuid,
-                              device: widget.device.device,
-                              data: value.toString() +
-                                  CommunicationConstant.offTimeKey +
-                                  CommunicationConstant.autoManualToggleKey,
-                            );
+                        bluetoothNotifier.writeToDevice(
+                          services: widget.device.services,
+                          uuid: widget.device.readUuid,
+                          device: widget.device.device,
+                          data: value.toString() +
+                              CommunicationConstant.offTimeKey +
+                              CommunicationConstant.autoManualToggleKey,
+                        );
                       },
                     ),
                   ],

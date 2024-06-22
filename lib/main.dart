@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shutter/features/theme/provider.dart';
+import 'package:shutter/features/theme/theme_provider.dart';
 import 'features/state/bluetooth_adapter_state_observer.dart';
 import 'features/ui/bluetooth_off_screen.dart';
 import 'features/ui/scan_page.dart';

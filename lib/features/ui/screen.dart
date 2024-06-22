@@ -1,26 +1,21 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
-import 'package:shutter/core/constants/communication_constant.dart';
-
 import '../../core/common/reusable_button.dart';
-import '../repository/ble_repository.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   final BluetoothDevice device;
   final List<BluetoothService>? services;
-  const MainScreen({required this.device, required this.services, Key? key})
-      : super(key: key);
+  const MainScreen({required this.device, required this.services, super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class MainScreenState extends ConsumerState<MainScreen> {
   TextEditingController onTimeController = TextEditingController();
   TextEditingController offTimeController = TextEditingController();
   bool shutter = false;
@@ -47,7 +42,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       // Update the connection state information
       setBleConnectionState(event);
     });
-    timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       setState(() {
         readDataFromDevice(widget.device, selectedUuid!);
       });
@@ -189,51 +184,19 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ReusableButton(
-                  onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                          services: widget.services!,
-                          uuid: selectedUuid!,
-                          device: widget.device,
-                          data: CommunicationConstant.shutterOnOffToggleKey +
-                              CommunicationConstant.autoManualToggleKey,
-                        );
-                  },
+                  onButtonClick: () {},
                   visibleText: 'S',
                 ),
                 ReusableButton(
-                  onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                          services: widget.services!,
-                          uuid: selectedUuid!,
-                          device: widget.device,
-                          data: CommunicationConstant.relayAToggleKey +
-                              CommunicationConstant.autoManualToggleKey,
-                        );
-                  },
+                  onButtonClick: () {},
                   visibleText: 'A',
                 ),
                 ReusableButton(
-                  onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                          services: widget.services!,
-                          uuid: selectedUuid!,
-                          device: widget.device,
-                          data: CommunicationConstant.relayBToggleKey +
-                              CommunicationConstant.autoManualToggleKey,
-                        );
-                  },
+                  onButtonClick: () {},
                   visibleText: 'B',
                 ),
                 ReusableButton(
-                  onButtonClick: () {
-                    ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                          services: widget.services!,
-                          uuid: selectedUuid!,
-                          device: widget.device,
-                          data: CommunicationConstant.relayCToggleKey +
-                              CommunicationConstant.autoManualToggleKey,
-                        );
-                  },
+                  onButtonClick: () {},
                   visibleText: 'C',
                 ),
               ],
@@ -257,12 +220,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   autoManual = index != 0;
                 });
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.services!,
-                      uuid: selectedUuid!,
-                      device: widget.device,
-                      data: CommunicationConstant.autoManualToggleKey,
-                    );
               },
             ),
             TextField(
@@ -288,23 +245,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             TextButton(
               onPressed: () {
                 print('Sending data to BLE: ${onTimeController.text}');
-                if (offTimeController.text.trim().isNotEmpty) {}
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.services!,
-                      uuid: selectedUuid!,
-                      device: widget.device,
-                      data: CommunicationConstant.onTimeKey +
-                          onTimeController.text +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.services!,
-                      uuid: selectedUuid!,
-                      device: widget.device,
-                      data: CommunicationConstant.offTimeKey +
-                          offTimeController.text +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
               },
               child: Text('Send'),
             ),
@@ -320,14 +260,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   onTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.services!,
-                      uuid: selectedUuid!,
-                      device: widget.device,
-                      data: value.toString() +
-                          CommunicationConstant.onTimeKey +
-                          'e',
-                    );
               },
             ),
             Text('off time'),
@@ -342,14 +274,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 setState(() {
                   offTimeController.text = value.toString();
                 });
-                ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                      services: widget.services!,
-                      uuid: selectedUuid!,
-                      device: widget.device,
-                      data: value.toString() +
-                          CommunicationConstant.offTimeKey +
-                          'e',
-                    );
               },
             ),
           ],

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../features/repository/ble_repository.dart'; // Assuming you use flutter_blue_plus
+import '../../features/repository/bluetooth_provider.dart'; // Assuming you use flutter_blue_plus
 
 class ConnectionStatusIndicator extends ConsumerWidget {
   final BluetoothDevice device;

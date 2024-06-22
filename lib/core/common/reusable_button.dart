@@ -34,10 +34,10 @@ class ReusableButton extends StatelessWidget {
       ),
       topLayerChild: Text(
         visibleText,
-        style: TextStyle(fontSize: 20),
+        style: Theme.of(context).textTheme.headlineLarge,
       ),
       baseDecoration: BoxDecoration(
-        color: Colors.green,
+        color: Colors.white,
         border: Border.all(),
       ),
     );

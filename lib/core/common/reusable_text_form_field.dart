@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../features/repository/ble_repository.dart';
+import 'package:shutter/core/constants/constants.dart';
+import '../../features/repository/bluetooth_provider.dart';
 import '../../models/parameters_model.dart';
 import '../constants/communication_constant.dart';
 
@@ -13,7 +13,6 @@ class CustomTextField extends ConsumerWidget {
   final String hintText;
   final String labelText;
   final IconData iconData;
-  final Color fillColor;
 
   const CustomTextField({
     required this.device,
@@ -22,11 +21,12 @@ class CustomTextField extends ConsumerWidget {
     required this.hintText,
     required this.labelText,
     required this.iconData,
-    this.fillColor = const Color(0xFFE0E0E0), // Default light grey color
+    // Default light grey color
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
@@ -43,9 +43,14 @@ class CustomTextField extends ConsumerWidget {
             border: const OutlineInputBorder(),
             hintText: hintText,
             labelText: labelText,
-            prefixIcon: Icon(iconData),
+            labelStyle: Theme.of(context).textTheme.bodyLarge,
+            hintStyle: Theme.of(context).textTheme.bodyLarge,
+            prefixIcon: Icon(
+              iconData,
+              color: Colors.white,
+            ),
             filled: true,
-            fillColor: fillColor,
+            fillColor: kSecondary,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
           ),
@@ -53,14 +58,14 @@ class CustomTextField extends ConsumerWidget {
             if (kDebugMode) {
               print('User typed: $value');
             }
-            ref.read(bleRepositoryProvider.notifier).writeToDevice(
-                  services: device.services,
-                  uuid: device.readUuid,
-                  device: device.device,
-                  data: CommunicationConstant.onTimeKey +
-                      controller.text +
-                      CommunicationConstant.autoManualToggleKey,
-                );
+            bluetoothNotifier.writeToDevice(
+              services: device.services,
+              uuid: device.readUuid,
+              device: device.device,
+              data: CommunicationConstant.onTimeKey +
+                  controller.text +
+                  CommunicationConstant.autoManualToggleKey,
+            );
           },
         ),
       ),
