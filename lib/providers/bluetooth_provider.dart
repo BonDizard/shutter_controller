@@ -97,6 +97,9 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     state = this.state.copyWith(isLoading: true);
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 4)).then((_) {
       state = this.state.copyWith(isLoading: false);
+      FlutterBluePlus.scanResults.listen((results) {
+        this.state = this.state.copyWith(scanResults: results);
+      });
     }).catchError((e) {
       logger.e('Error starting scan: $e');
       CustomToast.showToast(

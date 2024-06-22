@@ -1,15 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
+import 'package:logger/logger.dart';
 import 'package:shutter/core/common/reusable_slider.dart';
 import 'package:shutter/core/constants/ble_constants.dart';
-import 'package:shutter/core/utils.dart';
-
 import '../../core/common/connectio_status_bar.dart';
+import '../../core/common/custom_toast.dart';
 import '../../core/common/reusable_button.dart';
 import '../../core/common/reusable_text_form_field.dart';
 import '../../core/constants/communication_constant.dart';
@@ -30,6 +29,8 @@ class DeviceScreen extends ConsumerStatefulWidget {
 class _DeviceScreenState extends ConsumerState<DeviceScreen> {
   TextEditingController onTimeController = TextEditingController();
   TextEditingController offTimeController = TextEditingController();
+
+  final Logger logger = Logger();
 
   bool autoManual = false;
   String receivedData = '';
@@ -230,7 +231,10 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                                   'Sending data to BLE: ${onTimeController.text}');
                             }
                             if (onTimeController.text.trim().isEmpty) {
-                              showSnackBar(context, 'on Time Empty');
+                              logger.i('on Time Empty');
+                              CustomToast.showToast(
+                                'on Time Empty',
+                              );
                             }
                             ref
                                 .read(bleRepositoryProvider.notifier)
@@ -326,7 +330,10 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                                   'Sending data to BLE: ${offTimeController.text}');
                             }
                             if (offTimeController.text.trim().isEmpty) {
-                              showSnackBar(context, 'off Time Empty');
+                              logger.i('off Time Empty');
+                              CustomToast.showToast(
+                                'off Time Empty',
+                              );
                             }
                             ref
                                 .read(bleRepositoryProvider.notifier)

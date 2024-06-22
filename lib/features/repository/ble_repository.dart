@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:shutter/core/constants/ble_constants.dart';
-import 'package:shutter/core/utils.dart';
 import 'package:shutter/features/ui/device_screen.dart';
 import 'package:shutter/models/parameters_model.dart';
+import '../../core/common/custom_toast.dart';
 import '../../core/constants/color_constant.dart';
 import '../../models/ble_state_model.dart';
 import '../../models/connected_devices.dart';
@@ -44,6 +45,7 @@ class BleRepository extends StateNotifier<bool> {
     _connectedDevicesController
         .add(<ParametersModel>[]); // Emit an initial empty list
   }
+  final Logger logger = Logger();
 
   final StreamController<List<BluetoothDevice>> _discoveredDevicesController =
       StreamController<List<BluetoothDevice>>.broadcast();
@@ -182,12 +184,19 @@ class BleRepository extends StateNotifier<bool> {
       } else {
         _connectedDevicesController.add(<ParametersModel>[]);
       }
-      showSnackBar(context, 'Connected');
+
+      logger.i('Connected to ${selectedDevice.platformName}');
+      CustomToast.showToast(
+        'Connected to ${selectedDevice.platformName}',
+      );
     } catch (error) {
       if (kDebugMode) {
         print("Error during connect or discovery: $error");
       }
-      showSnackBar(context, 'Connection Failed');
+      logger.i('Connection Failed');
+      CustomToast.showToast(
+        'Connection Failed',
+      );
     }
   }
 
@@ -296,9 +305,10 @@ class BleRepository extends StateNotifier<bool> {
         ColorConstants.cColor = Colors.amber;
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error processing received data: $e');
-      }
+      logger.i('Error processing received data: $e');
+      CustomToast.showToast(
+        'Error processing received data',
+      );
     }
   }
 
