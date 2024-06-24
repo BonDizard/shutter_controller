@@ -47,10 +47,14 @@ class CustomTextField extends ConsumerWidget {
             hintStyle: Theme.of(context).textTheme.bodyLarge,
             prefixIcon: Icon(
               iconData,
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? kPrimaryLight
+                  : kPrimary,
             ),
             filled: true,
-            fillColor: kSecondary,
+            fillColor: Theme.of(context).brightness == Brightness.dark
+                ? kSecondary
+                : kSecondaryLight,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
           ),

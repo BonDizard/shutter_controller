@@ -17,6 +17,7 @@ final connectionStateProvider =
   final bleRepository = ref.watch(bluetoothProvider.notifier);
   return bleRepository.getConnectionState(device);
 });
+
 final bluetoothProvider =
     StateNotifierProvider<BluetoothNotifier, BluetoothStateModel>(
   (ref) => BluetoothNotifier(ref),
@@ -96,10 +97,6 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     required BuildContext context,
   }) async {
     try {
-      for (var connectedDevice in state.connectedDevices) {
-        await connectedDevice.disconnect();
-      }
-
       await device.connect();
 
       state = this.state.copyWith(
@@ -149,6 +146,12 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       writeUuid: writeUuid,
     );
     return parametersModel;
+  }
+
+  Future<void> disconnectAllDevices() async {
+    for (var connectedDevice in state.connectedDevices) {
+      await connectedDevice.disconnect();
+    }
   }
 
   void disconnectFromDevice(BluetoothDevice device) async {
@@ -257,22 +260,30 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       if (shutter == 0) {
         ColorConstants.sColor = Theme.of(context).colorScheme.error;
       } else {
-        ColorConstants.sColor = kTertiary;
+        ColorConstants.sColor = Theme.of(context).brightness == Brightness.dark
+            ? kTertiary
+            : kTertiaryLight;
       }
       if (a == 0) {
         ColorConstants.aColor = Theme.of(context).colorScheme.error;
       } else {
-        ColorConstants.aColor = kTertiary;
+        ColorConstants.aColor = Theme.of(context).brightness == Brightness.dark
+            ? kTertiary
+            : kTertiaryLight;
       }
       if (b == 0) {
         ColorConstants.bColor = Theme.of(context).colorScheme.error;
       } else {
-        ColorConstants.bColor = kTertiary;
+        ColorConstants.bColor = Theme.of(context).brightness == Brightness.dark
+            ? kTertiary
+            : kTertiaryLight;
       }
       if (c == 0) {
         ColorConstants.cColor = Theme.of(context).colorScheme.error;
       } else {
-        ColorConstants.cColor = kTertiary;
+        ColorConstants.cColor = Theme.of(context).brightness == Brightness.dark
+            ? kTertiary
+            : kTertiaryLight;
       }
     } catch (e) {
       logger.i('Error processing received data: $e');

@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:shutter/core/common/loading.dart';
 import '../../core/constants/constants.dart';
 import '../repository/bluetooth_provider.dart';
-import 'all_device _dashboard.dart';
+import 'all_device_dashboard.dart';
 
 class ScanPage extends ConsumerStatefulWidget {
   const ScanPage({super.key});
@@ -17,6 +17,12 @@ class ScanPage extends ConsumerStatefulWidget {
 
 class _ScanPageState extends ConsumerState<ScanPage> {
   @override
+  void dispose() {
+    ref.watch(bluetoothProvider.notifier).disconnectAllDevices();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bluetoothState = ref.watch(bluetoothProvider);
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
@@ -25,7 +31,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('SPEC - RULE'),
-        backgroundColor: kSecondary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? kSecondary
+            : kSecondaryLight,
         foregroundColor: Colors.white,
         elevation: 3,
       ),
@@ -144,7 +152,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
 
     return Card(
       elevation: 3,
-      color: kTertiary,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? kTertiary
+          : kTertiaryLight,
       shadowColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -157,7 +167,13 @@ class _ScanPageState extends ConsumerState<ScanPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          tileColor: connected ? kTertiary : kSecondary,
+          tileColor: connected
+              ? Theme.of(context).brightness == Brightness.dark
+                  ? kTertiary
+                  : kTertiaryLight
+              : Theme.of(context).brightness == Brightness.dark
+                  ? kSecondary
+                  : kSecondaryLight,
           title: Text(
             device.platformName.isEmpty ? 'N/A' : device.platformName,
             style: const TextStyle(fontSize: 16),
@@ -198,22 +214,30 @@ class _ScanPageState extends ConsumerState<ScanPage> {
     if (rssi > -60) {
       return Icon(
         Icons.signal_cellular_alt_rounded,
-        color: kPrimary,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? kPrimary
+            : kPrimaryLight,
       );
     } else if (rssi > -70) {
       return Icon(
         Icons.signal_cellular_alt_2_bar_sharp,
-        color: kPrimary,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? kPrimary
+            : kPrimaryLight,
       );
     } else if (rssi > -80) {
       return Icon(
         Icons.signal_cellular_alt_1_bar,
-        color: kPrimary,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? kPrimary
+            : kPrimaryLight,
       );
     } else {
       return Icon(
         Icons.signal_cellular_connected_no_internet_0_bar,
-        color: kPrimary,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? kPrimary
+            : kPrimaryLight,
       );
     }
   }

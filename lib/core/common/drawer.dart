@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:shutter/models/parameters_model.dart';
 import '../../features/repository/bluetooth_provider.dart';
+import '../../features/repository/parameters_provider.dart';
 
 class CustomDrawer extends ConsumerStatefulWidget {
   final ParametersModel parametersModel;
+  final int index;
+  final Function(String? readUuid, String? writeUuid) onUpdateUuids;
 
-  const CustomDrawer({super.key, required this.parametersModel});
+  const CustomDrawer({
+    super.key,
+    required this.parametersModel,
+    required this.index,
+    required this.onUpdateUuids,
+  });
 
   @override
   ConsumerState<CustomDrawer> createState() => _CustomDrawerState();
@@ -15,35 +23,38 @@ class CustomDrawer extends ConsumerStatefulWidget {
 
 class _CustomDrawerState extends ConsumerState<CustomDrawer> {
   bool _showDropdowns = false;
-  String? selectedWriteUuid;
-  String? selectedReadUuid;
-  List<Map<String, String>> uuidsWithProperties = [];
+  List<String> uuids = [];
 
   @override
   void initState() {
     super.initState();
-    _initializeWriteUuids();
+    // Delay the state update
+    Future.microtask(() {
+      _initializeUuids();
+    });
   }
 
-  void _initializeWriteUuids() {
+  void _initializeUuids() {
+    final uuidNotifier = ref.read(parametersModelProvider.notifier);
+
     for (var service in widget.parametersModel.services) {
       for (BluetoothCharacteristic c in service.characteristics) {
-        String properties = '';
-        if (c.properties.read) properties += 'Read ';
-        if (c.properties.write) properties += 'Write ';
-        if (c.properties.notify) properties += 'Notify ';
-        if (c.properties.writeWithoutResponse) properties += 'WriteWR ';
-        if (c.properties.indicate) properties += 'Indicate ';
-        uuidsWithProperties
-            .add({'uuid': c.uuid.toString(), 'properties': properties.trim()});
+        uuids.add(c.uuid.toString());
       }
     }
-    if (uuidsWithProperties.isNotEmpty) {
-      selectedWriteUuid = uuidsWithProperties.first['uuid'];
+
+    if (uuids.isNotEmpty) {
+      final initialWriteUuid = widget.parametersModel.writeUuid.isEmpty
+          ? uuids.first
+          : widget.parametersModel.writeUuid;
+      final initialReadUuid = widget.parametersModel.readUuid.isEmpty
+          ? uuids.last
+          : widget.parametersModel.readUuid;
+
+      uuidNotifier.updateUuids(widget.index, initialReadUuid, initialWriteUuid);
     }
-    if (uuidsWithProperties.isNotEmpty) {
-      selectedReadUuid = uuidsWithProperties.last['uuid'];
-    }
+
+    setState(() {});
   }
 
   @override
@@ -52,6 +63,8 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
       connectionStateProvider(widget.parametersModel.device),
     );
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+
+    final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.8,
@@ -98,38 +111,44 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
           if (_showDropdowns) ...[
             Text('Write UUID'),
             DropdownButton<String>(
-              value: selectedWriteUuid,
-              items: uuidsWithProperties.map((Map<String, String> uuidData) {
+              value: updatedDevice.writeUuid.isEmpty
+                  ? null
+                  : updatedDevice.writeUuid,
+              hint: const Text('Select Write UUID'),
+              items: uuids.map((uuid) {
                 return DropdownMenuItem<String>(
-                  value: uuidData['uuid'],
+                  value: uuid,
                   child: Text(
-                    '${uuidData['uuid']} (${uuidData['properties']})',
+                    uuid,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(() {
-                  selectedWriteUuid = newValue;
-                });
+                ref.read(parametersModelProvider.notifier).updateUuids(
+                    widget.index, updatedDevice.readUuid, newValue);
+                widget.onUpdateUuids(updatedDevice.readUuid, newValue);
               },
             ),
             Text('Read UUID'),
             DropdownButton<String>(
-              value: selectedReadUuid,
-              items: uuidsWithProperties.map((Map<String, String> uuidData) {
+              value: updatedDevice.readUuid.isEmpty
+                  ? null
+                  : updatedDevice.readUuid,
+              hint: const Text('Select Read UUID'),
+              items: uuids.map((uuid) {
                 return DropdownMenuItem<String>(
-                  value: uuidData['uuid'],
+                  value: uuid,
                   child: Text(
-                    '${uuidData['uuid']} (${uuidData['properties']})',
+                    uuid,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(() {
-                  selectedReadUuid = newValue;
-                });
+                ref.read(parametersModelProvider.notifier).updateUuids(
+                    widget.index, newValue, updatedDevice.writeUuid);
+                widget.onUpdateUuids(newValue, updatedDevice.writeUuid);
               },
             ),
           ],
