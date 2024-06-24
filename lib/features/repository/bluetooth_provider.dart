@@ -1,15 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/models/parameters_model.dart';
+
+import '../../core/common/custom_toast.dart';
 import '../../core/constants/ble_constants.dart';
 import '../../core/constants/color_constant.dart';
 import '../../core/constants/constants.dart';
 import '/models/ble_state_model.dart';
-import '../../core/common/custom_toast.dart';
 
 final connectionStateProvider =
     StreamProvider.family<BluetoothConnectionState, BluetoothDevice>(
@@ -220,9 +220,9 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       RegExp autoManualRegex = RegExp(r'E:([\d.]+)', caseSensitive: false);
       RegExp onTimeRegex = RegExp(r'O:([\d.]+)', caseSensitive: false);
       RegExp offTimeRegex = RegExp(r'F:([\d.]+)', caseSensitive: false);
-      RegExp aRegex = RegExp(r'A:([\d.]+)', caseSensitive: false);
-      RegExp bRegex = RegExp(r'B:([\d.]+)', caseSensitive: false);
-      RegExp cRegex = RegExp(r'C:([\d.]+)', caseSensitive: false);
+      RegExp aRegex = RegExp(r'1:([\d.]+)', caseSensitive: false);
+      RegExp bRegex = RegExp(r'2:([\d.]+)', caseSensitive: false);
+      RegExp cRegex = RegExp(r'3:([\d.]+)', caseSensitive: false);
 
       RegExpMatch? cRegexMatch = cRegex.firstMatch(receivedString);
       double c = cRegexMatch != null
