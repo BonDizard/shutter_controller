@@ -4,6 +4,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/core/common/loading.dart';
+
 import '../../core/constants/constants.dart';
 import '../repository/bluetooth_provider.dart';
 import 'all_device_dashboard.dart';
@@ -30,7 +31,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('SPEC - RULE'),
+        title: const Text('SPECRULE Scientific'),
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? kSecondary
             : kSecondaryLight,

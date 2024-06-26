@@ -81,7 +81,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
     final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
     logger.d('readUuid: ${updatedDevice.readUuid}');
-    logger.d('writeuuid: ${updatedDevice.writeUuid}');
+    logger.d('writeUuid: ${updatedDevice.writeUuid}');
 
     readDataFromDevice(updatedDevice.device, updatedDevice.readUuid);
     return Scaffold(
@@ -98,313 +98,316 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(width * 0.03),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(width * 0.045),
-              ),
-              height: height * 0.14,
-              child: Padding(
-                padding: EdgeInsets.all(width * 0.03),
-                child: Image.asset(
-                  'assets/images/app_logo/logo.png',
-                  fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding:
+                  EdgeInsets.only(top: height * 0.04, bottom: height * 0.025),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(width * 0.045),
+                ),
+                height: height * 0.14,
+                child: Padding(
+                  padding: EdgeInsets.all(width * 0.03),
+                  child: Image.asset(
+                    'assets/images/app_logo/logo.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Text(
-          //   receivedData,
-          //   style: Theme.of(context).textTheme.bodyLarge,
-          // ),
-          Padding(
-            padding: EdgeInsets.all(width * 0.03),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ReusableButton(
-                  onButtonClick: () {
-                    bluetoothNotifier.writeToDevice(
-                      services: updatedDevice.services,
-                      uuid: updatedDevice.writeUuid,
-                      device: updatedDevice.device,
-                      data: CommunicationConstant.shutterOnOffToggleKey +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
-                  },
-                  visibleText: 'S',
-                ),
-                ReusableButton(
-                  onButtonClick: () {
-                    bluetoothNotifier.writeToDevice(
-                      services: updatedDevice.services,
-                      uuid: updatedDevice.writeUuid,
-                      device: updatedDevice.device,
-                      data: CommunicationConstant.relayAToggleKey +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
-                  },
-                  visibleText: 'A',
-                ),
-                ReusableButton(
-                  onButtonClick: () {
-                    bluetoothNotifier.writeToDevice(
-                      services: updatedDevice.services,
-                      uuid: updatedDevice.writeUuid,
-                      device: updatedDevice.device,
-                      data: CommunicationConstant.relayBToggleKey +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
-                  },
-                  visibleText: 'B',
-                ),
-                ReusableButton(
-                  onButtonClick: () {
-                    bluetoothNotifier.writeToDevice(
-                      services: updatedDevice.services,
-                      uuid: updatedDevice.writeUuid,
-                      device: updatedDevice.device,
-                      data: CommunicationConstant.relayCToggleKey +
-                          CommunicationConstant.autoManualToggleKey,
-                    );
-                  },
-                  visibleText: 'C',
-                ),
+            // Text(
+            //   receivedData,
+            //   style: Theme.of(context).textTheme.bodyLarge,
+            // ),
+            Padding(
+              padding: EdgeInsets.all(height * 0.01),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ReusableButton(
+                    onButtonClick: () {
+                      bluetoothNotifier.writeToDevice(
+                        services: updatedDevice.services,
+                        uuid: updatedDevice.writeUuid,
+                        device: updatedDevice.device,
+                        data: CommunicationConstant.shutterOnOffToggleKey +
+                            CommunicationConstant.autoManualToggleKey,
+                      );
+                    },
+                    visibleText: 'S',
+                  ),
+                  ReusableButton(
+                    onButtonClick: () {
+                      bluetoothNotifier.writeToDevice(
+                        services: updatedDevice.services,
+                        uuid: updatedDevice.writeUuid,
+                        device: updatedDevice.device,
+                        data: CommunicationConstant.relayOneToggleKey,
+                      );
+                    },
+                    visibleText: '1',
+                  ),
+                  ReusableButton(
+                    onButtonClick: () {
+                      bluetoothNotifier.writeToDevice(
+                        services: updatedDevice.services,
+                        uuid: updatedDevice.writeUuid,
+                        device: updatedDevice.device,
+                        data: CommunicationConstant.relayTwoToggleKey,
+                      );
+                    },
+                    visibleText: '2',
+                  ),
+                  ReusableButton(
+                    onButtonClick: () {
+                      bluetoothNotifier.writeToDevice(
+                        services: updatedDevice.services,
+                        uuid: updatedDevice.writeUuid,
+                        device: updatedDevice.device,
+                        data: CommunicationConstant.relayThreeToggleKey,
+                      );
+                    },
+                    visibleText: '3',
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: height * 0.03),
+            FlutterToggleTab(
+              width: width * 0.17,
+              borderRadius: width * 0.03,
+              selectedBackgroundColors: [
+                Theme.of(context).brightness == Brightness.dark
+                    ? kTertiary
+                    : kTertiaryLight
               ],
+              unSelectedBackgroundColors: [
+                Theme.of(context).brightness == Brightness.dark
+                    ? kSecondary
+                    : kSecondaryLight
+              ],
+              selectedTextStyle: Theme.of(context).textTheme.headlineLarge,
+              unSelectedTextStyle: Theme.of(context).textTheme.bodyLarge,
+              labels: const ['Auto', 'Manual'],
+              selectedIndex: BLEConstants.autoManualToggleKey ? 1 : 0,
+              selectedLabelIndex: (index) {
+                setState(() {
+                  BLEConstants.autoManualToggleKey = index != 0;
+                });
+                bluetoothNotifier.writeToDevice(
+                  services: updatedDevice.services,
+                  uuid: updatedDevice.writeUuid,
+                  device: updatedDevice.device,
+                  data: CommunicationConstant.autoManualToggleKey,
+                );
+              },
             ),
-          ),
-          SizedBox(height: width * 0.03),
-          FlutterToggleTab(
-            width: width * 0.17,
-            borderRadius: width * 0.03,
-            selectedBackgroundColors: [
-              Theme.of(context).brightness == Brightness.dark
+            SizedBox(height: height * 0.022),
+            Card(
+              elevation: 4.0,
+              color: Theme.of(context).brightness == Brightness.dark
                   ? kTertiary
-                  : kTertiaryLight
-            ],
-            unSelectedBackgroundColors: [
-              Theme.of(context).brightness == Brightness.dark
-                  ? kSecondary
-                  : kSecondaryLight
-            ],
-            selectedTextStyle: Theme.of(context).textTheme.headlineLarge,
-            unSelectedTextStyle: Theme.of(context).textTheme.bodyLarge,
-            labels: const ['Auto', 'Manual'],
-            selectedIndex: BLEConstants.autoManualToggleKey ? 1 : 0,
-            selectedLabelIndex: (index) {
-              setState(() {
-                BLEConstants.autoManualToggleKey = index != 0;
-              });
-              bluetoothNotifier.writeToDevice(
-                services: updatedDevice.services,
-                uuid: updatedDevice.writeUuid,
-                device: updatedDevice.device,
-                data: CommunicationConstant.autoManualToggleKey,
-              );
-            },
-          ),
-          SizedBox(height: width * 0.03),
-          Card(
-            elevation: 4.0,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? kTertiary
-                : kTertiaryLight,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            margin: const EdgeInsets.all(16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      'On Time',
-                      style: Theme.of(context).textTheme.headlineLarge,
+                  : kTertiaryLight,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(height * 0.03),
+              ),
+              margin: EdgeInsets.all(height * 0.02),
+              child: Padding(
+                padding: EdgeInsets.all(height * 0.02),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        'Off Time',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CustomTextField(
-                        device: updatedDevice,
-                        controller: onTimeController,
-                        hintText: 'Enter on time',
-                        labelText: 'On Time',
-                        iconData: Icons.timer,
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            BLEConstants.onTimeReceivedFromBleDevice.toString(),
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
-                          // Text(
-                          //   'Received Value',
-                          //   style: Theme.of(context).textTheme.bodyLarge,
-                          // ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          if (kDebugMode) {
-                            print(
-                                'Sending data to BLE: ${onTimeController.text}');
-                          }
-                          if (onTimeController.text.trim().isEmpty) {
-                            logger.i('on Time Empty');
-                            CustomToast.showToast(
-                              'on Time Empty',
-                            );
-                          } else {
-                            bluetoothNotifier.writeToDevice(
-                              services: updatedDevice.services,
-                              uuid: updatedDevice.writeUuid,
-                              device: updatedDevice.device,
-                              data: CommunicationConstant.onTimeKey +
-                                  onTimeController.text +
-                                  CommunicationConstant.autoManualToggleKey,
-                            );
-                          }
-                        },
-                        child: const Icon(
-                          Icons.send,
-                          size: 50,
+                    SizedBox(height: height * 0.02),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomTextField(
+                          device: updatedDevice,
+                          controller: onTimeController,
+                          hintText: 'Enter on time',
+                          labelText: 'On Time',
+                          iconData: Icons.timer,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: width * 0.03),
-                  ReusableSlider(
-                    initialValue: onTimeSliderValue,
-                    onChanged: (double value) {
-                      if (kDebugMode) {
-                        print('onTimeSliderValue: $value');
-                      }
-                      setState(() {
-                        onTimeSliderValue = value;
-                        onTimeController.text = onTimeSliderValue.toString();
-                      });
-                      bluetoothNotifier.writeToDevice(
-                        services: updatedDevice.services,
-                        uuid: updatedDevice.writeUuid,
-                        device: updatedDevice.device,
-                        data: value.toString() +
-                            CommunicationConstant.onTimeKey +
-                            CommunicationConstant.autoManualToggleKey,
-                      );
-                    },
-                  ),
-                ],
+                        Column(
+                          children: [
+                            Text(
+                              BLEConstants.onTimeReceivedFromBleDevice
+                                  .toString(),
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            // Text(
+                            //   'Received Value',
+                            //   style: Theme.of(context).textTheme.bodyLarge,
+                            // ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            if (kDebugMode) {
+                              print(
+                                  'Sending data to BLE: ${onTimeController.text}');
+                            }
+                            if (onTimeController.text.trim().isEmpty) {
+                              logger.i('on Time Empty');
+                              CustomToast.showToast(
+                                'on Time Empty',
+                              );
+                            } else {
+                              bluetoothNotifier.writeToDevice(
+                                services: updatedDevice.services,
+                                uuid: updatedDevice.writeUuid,
+                                device: updatedDevice.device,
+                                data: CommunicationConstant.onTimeKey +
+                                    onTimeController.text +
+                                    CommunicationConstant.autoManualToggleKey,
+                              );
+                            }
+                          },
+                          child: Icon(
+                            Icons.send,
+                            size: width * 0.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: width * 0.03),
+                    ReusableSlider(
+                      initialValue: onTimeSliderValue,
+                      onChanged: (double value) {
+                        if (kDebugMode) {
+                          print('onTimeSliderValue: $value');
+                        }
+                        setState(() {
+                          onTimeSliderValue = value;
+                          onTimeController.text =
+                              onTimeSliderValue.toInt().toString();
+                        });
+                        bluetoothNotifier.writeToDevice(
+                          services: updatedDevice.services,
+                          uuid: updatedDevice.writeUuid,
+                          device: updatedDevice.device,
+                          data: value.toString() +
+                              CommunicationConstant.onTimeKey +
+                              CommunicationConstant.autoManualToggleKey,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          Card(
-            elevation: 4.0,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? kTertiary
-                : kTertiaryLight,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            margin: const EdgeInsets.all(16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      'Off Time',
-                      style: Theme.of(context).textTheme.headlineLarge,
+            SizedBox(height: height * 0.009),
+            Card(
+              elevation: 4.0,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? kTertiary
+                  : kTertiaryLight,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(height * 0.03),
+              ),
+              margin: EdgeInsets.all(height * 0.02),
+              child: Padding(
+                padding: EdgeInsets.all(height * 0.02),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        'Off Time',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CustomTextField(
-                        device: updatedDevice,
-                        controller: offTimeController,
-                        hintText: 'Enter off time',
-                        labelText: 'Off Time',
-                        iconData: Icons.timer,
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            BLEConstants.offTimeReceivedFromBleDevice
-                                .toString(),
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
-                          // Text(
-                          //   'Received Value',
-                          //   style: Theme.of(context).textTheme.bodyLarge,
-                          // ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          if (kDebugMode) {
-                            print(
-                                'Sending data to BLE: ${offTimeController.text}');
-                          }
-                          if (offTimeController.text.trim().isEmpty) {
-                            logger.i('Off Time Empty');
-                            CustomToast.showToast(
-                              'Off Time Empty',
-                            );
-                          } else {
-                            bluetoothNotifier.writeToDevice(
-                              services: updatedDevice.services,
-                              uuid: updatedDevice.writeUuid,
-                              device: updatedDevice.device,
-                              data: CommunicationConstant.offTimeKey +
-                                  offTimeController.text +
-                                  CommunicationConstant.autoManualToggleKey,
-                            );
-                          }
-                        },
-                        child: const Icon(
-                          Icons.send,
-                          size: 50,
+                    SizedBox(height: height * 0.02),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomTextField(
+                          device: updatedDevice,
+                          controller: offTimeController,
+                          hintText: 'Enter off time',
+                          labelText: 'Off Time',
+                          iconData: Icons.timer,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  ReusableSlider(
-                    initialValue: offTimeSliderValue,
-                    onChanged: (double value) {
-                      if (kDebugMode) {
-                        print('offTimeSliderValue: $value');
-                      }
-                      setState(() {
-                        offTimeSliderValue = value;
-                        offTimeController.text = offTimeSliderValue.toString();
-                      });
-                      bluetoothNotifier.writeToDevice(
-                        services: updatedDevice.services,
-                        uuid: updatedDevice.writeUuid,
-                        device: updatedDevice.device,
-                        data: value.toString() +
-                            CommunicationConstant.offTimeKey +
-                            CommunicationConstant.autoManualToggleKey,
-                      );
-                    },
-                  ),
-                ],
+                        Column(
+                          children: [
+                            Text(
+                              BLEConstants.offTimeReceivedFromBleDevice
+                                  .toString(),
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            // Text(
+                            //   'Received Value',
+                            //   style: Theme.of(context).textTheme.bodyLarge,
+                            // ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            if (kDebugMode) {
+                              print(
+                                  'Sending data to BLE: ${offTimeController.text}');
+                            }
+                            if (offTimeController.text.trim().isEmpty) {
+                              logger.i('Off Time Empty');
+                              CustomToast.showToast(
+                                'Off Time Empty',
+                              );
+                            } else {
+                              bluetoothNotifier.writeToDevice(
+                                services: updatedDevice.services,
+                                uuid: updatedDevice.writeUuid,
+                                device: updatedDevice.device,
+                                data: CommunicationConstant.offTimeKey +
+                                    offTimeController.text +
+                                    CommunicationConstant.autoManualToggleKey,
+                              );
+                            }
+                          },
+                          child: Icon(
+                            Icons.send,
+                            size: height * 0.05,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: height * 0.02),
+                    ReusableSlider(
+                      initialValue: offTimeSliderValue,
+                      onChanged: (double value) {
+                        if (kDebugMode) {
+                          print('offTimeSliderValue: $value');
+                        }
+                        setState(() {
+                          offTimeSliderValue = value;
+                          offTimeController.text =
+                              offTimeSliderValue.toInt().toString();
+                        });
+                        bluetoothNotifier.writeToDevice(
+                          services: updatedDevice.services,
+                          uuid: updatedDevice.writeUuid,
+                          device: updatedDevice.device,
+                          data: value.toString() +
+                              CommunicationConstant.offTimeKey +
+                              CommunicationConstant.autoManualToggleKey,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/common/loading.dart';
+
 import '../../core/constants/constants.dart';
 import '../repository/bluetooth_provider.dart';
 import '../repository/parameters_provider.dart';
@@ -41,6 +42,7 @@ class _AllDevicePagesState extends ConsumerState<AllDevicePages> {
     final bluetoothState = ref.watch(bluetoothProvider);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: bluetoothState.isLoading
           ? const Loader()
           : parameterModels.isEmpty
