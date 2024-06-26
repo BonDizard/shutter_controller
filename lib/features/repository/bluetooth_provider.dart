@@ -5,11 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/models/parameters_model.dart';
 
+import '/models/ble_state_model.dart';
 import '../../core/common/custom_toast.dart';
 import '../../core/constants/ble_constants.dart';
 import '../../core/constants/color_constant.dart';
 import '../../core/constants/constants.dart';
-import '/models/ble_state_model.dart';
 
 final connectionStateProvider =
     StreamProvider.family<BluetoothConnectionState, BluetoothDevice>(
@@ -246,7 +246,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       double autoManual = autoManualMatch != null
           ? double.tryParse(autoManualMatch.group(1)!) ?? 0.0
           : 0.0;
-      BLEConstants.autoManualToggleKey = autoManual == 0 ? false : true;
+      BLEConstants.autoManualToggleKey = autoManual == 0 ? true : false;
       RegExpMatch? onTimeMatch = onTimeRegex.firstMatch(receivedString);
       double onTime = onTimeMatch != null
           ? double.tryParse(onTimeMatch.group(1)!) ?? 0.0

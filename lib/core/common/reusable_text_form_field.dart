@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/constants/constants.dart';
+
 import '../../features/repository/bluetooth_provider.dart';
 import '../../models/parameters_model.dart';
 import '../constants/communication_constant.dart';
@@ -47,6 +48,7 @@ class CustomTextField extends ConsumerWidget {
             hintStyle: Theme.of(context).textTheme.bodyLarge,
             prefixIcon: Icon(
               iconData,
+              size: screenWidth * 0.05,
               color: Theme.of(context).brightness == Brightness.dark
                   ? kPrimaryLight
                   : kPrimary,
