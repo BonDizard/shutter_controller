@@ -8,8 +8,6 @@ import 'package:shutter/models/parameters_model.dart';
 import '/models/ble_state_model.dart';
 import '../../core/common/custom_toast.dart';
 import '../../core/constants/ble_constants.dart';
-import '../../core/constants/color_constant.dart';
-import '../../core/constants/constants.dart';
 
 final connectionStateProvider =
     StreamProvider.family<BluetoothConnectionState, BluetoothDevice>(
@@ -223,6 +221,12 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       RegExp aRegex = RegExp(r'1:([\d.]+)', caseSensitive: false);
       RegExp bRegex = RegExp(r'2:([\d.]+)', caseSensitive: false);
       RegExp cRegex = RegExp(r'3:([\d.]+)', caseSensitive: false);
+      RegExp lRegex = RegExp(r'L:([\d.]+)', caseSensitive: false);
+
+      RegExpMatch? lRegexMatch = lRegex.firstMatch(receivedString);
+      double l = lRegexMatch != null
+          ? double.tryParse(lRegexMatch.group(1)!) ?? 0.0
+          : 0.0;
 
       RegExpMatch? cRegexMatch = cRegex.firstMatch(receivedString);
       double c = cRegexMatch != null
@@ -251,39 +255,37 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       double onTime = onTimeMatch != null
           ? double.tryParse(onTimeMatch.group(1)!) ?? 0.0
           : 0.0;
-      BLEConstants.onTimeReceivedFromBleDevice = onTime;
+      BLEConstants.onTimeReceivedFromBleDevice = onTime.toInt();
       RegExpMatch? offTimeMatch = offTimeRegex.firstMatch(receivedString);
       double offTime = offTimeMatch != null
           ? double.tryParse(offTimeMatch.group(1)!) ?? 0.0
           : 0.0;
-      BLEConstants.offTimeReceivedFromBleDevice = offTime;
+      BLEConstants.offTimeReceivedFromBleDevice = offTime.toInt();
+
       if (shutter == 0) {
-        ColorConstants.sColor = Theme.of(context).colorScheme.error;
+        BLEConstants.sIsOn = false;
       } else {
-        ColorConstants.sColor = Theme.of(context).brightness == Brightness.dark
-            ? kTertiary
-            : kTertiaryLight;
+        BLEConstants.sIsOn = true;
       }
       if (a == 0) {
-        ColorConstants.aColor = Theme.of(context).colorScheme.error;
+        BLEConstants.oneIsOn = false;
       } else {
-        ColorConstants.aColor = Theme.of(context).brightness == Brightness.dark
-            ? kTertiary
-            : kTertiaryLight;
+        BLEConstants.oneIsOn = true;
       }
       if (b == 0) {
-        ColorConstants.bColor = Theme.of(context).colorScheme.error;
+        BLEConstants.twoIsOn = false;
       } else {
-        ColorConstants.bColor = Theme.of(context).brightness == Brightness.dark
-            ? kTertiary
-            : kTertiaryLight;
+        BLEConstants.twoIsOn = true;
       }
       if (c == 0) {
-        ColorConstants.cColor = Theme.of(context).colorScheme.error;
+        BLEConstants.threeIsOn = false;
       } else {
-        ColorConstants.cColor = Theme.of(context).brightness == Brightness.dark
-            ? kTertiary
-            : kTertiaryLight;
+        BLEConstants.threeIsOn = true;
+      }
+      if (l == 0) {
+        BLEConstants.lightIsOn = false;
+      } else {
+        BLEConstants.lightIsOn = true;
       }
     } catch (e) {
       logger.i('Error processing received data: $e');

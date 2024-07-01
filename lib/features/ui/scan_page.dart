@@ -4,8 +4,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/core/common/loading.dart';
+import 'package:shutter/core/common/reusable_button.dart';
 
-import '../../core/constants/constants.dart';
+import '../../core/constants/color_constant.dart';
 import '../repository/bluetooth_provider.dart';
 import 'all_device_dashboard.dart';
 
@@ -25,18 +26,22 @@ class _ScanPageState extends ConsumerState<ScanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     final bluetoothState = ref.watch(bluetoothProvider);
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
 
     return Scaffold(
+      backgroundColor: ColorConstants.backgroundColorTwo,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('SPECRULE Scientific'),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? kSecondary
-            : kSecondaryLight,
-        foregroundColor: Colors.white,
-        elevation: 3,
+        title: const Text(
+          'SPECRULE Scientific',
+          style: TextStyle(
+            fontFamily: 'Alatsi',
+            color: ColorConstants.darkColor,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
       ),
       body: Center(
         child: Padding(
@@ -57,14 +62,18 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                               const Text(
                                 'Available Devices',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  fontFamily: 'Alatsi',
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                  color: ColorConstants.darkColor,
                                 ),
                               ),
                               Text(
                                 '[${bluetoothState.scanResults.length} device(s) available]',
-                                style: const TextStyle(color: Colors.grey),
+                                style: TextStyle(
+                                  fontFamily: 'Alatsi',
+                                  color:
+                                      ColorConstants.darkColor.withOpacity(0.5),
+                                ),
                               ),
                               ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
@@ -81,16 +90,17 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                           ),
                         ),
                       ),
-                    ElevatedButton(
-                      onPressed: () {
-                        bluetoothNotifier.startScan();
-                        bluetoothNotifier.fetchConnectedDevices();
-                      },
-                      child: const Text('Scan for Devices'),
-                    ),
+                    ReusableButton(
+                        onPressed: () {
+                          bluetoothNotifier.startScan();
+                          bluetoothNotifier.fetchConnectedDevices();
+                        },
+                        buttonText: 'Scan'),
                     const SizedBox(
                         height: 8), // Add space between button and divider
-                    const Divider(color: Colors.white),
+                    const Divider(
+                      color: ColorConstants.darkColor,
+                    ),
                   ],
                 ),
               ),
@@ -100,14 +110,17 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                     const Text(
                       'Connected Devices:',
                       style: TextStyle(
-                        color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Alatsi',
+                        color: ColorConstants.darkColor,
                       ),
                     ),
                     Text(
                       '[${bluetoothState.connectedDevices.length} device(s) connected]',
-                      style: const TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        fontFamily: 'Alatsi',
+                        color: ColorConstants.darkColor.withOpacity(.5),
+                      ),
                     ),
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
@@ -126,19 +139,35 @@ class _ScanPageState extends ConsumerState<ScanPage> {
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: FloatingActionButton(
-          backgroundColor: kTertiary,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AllDevicePages(),
-              ),
-            );
-          },
-          child: const Icon(
-            Icons.keyboard_arrow_right_sharp,
+        padding: EdgeInsets.only(right: width * 0.07, bottom: width * 0.07),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            gradient: const LinearGradient(
+              colors: [
+                ColorConstants.onColorOne,
+                ColorConstants.onColorTwo,
+                ColorConstants.onColorThree,
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+            ),
+          ),
+          child: FloatingActionButton(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AllDevicePages(),
+                ),
+              );
+            },
+            child: const Icon(
+              Icons.keyboard_arrow_right_sharp,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
@@ -146,35 +175,65 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   }
 
   Widget buildConnectedDeviceTile(BluetoothDevice device, bool connected) {
+    final width = MediaQuery.of(context).size.width;
     final connectionStatus = ref.watch(connectionStateProvider(device));
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
 
     Logger logger = Logger();
 
-    return Card(
-      elevation: 3,
-      color: Theme.of(context).brightness == Brightness.dark
-          ? kTertiary
-          : kTertiaryLight,
-      shadowColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        width: width * 0.8,
+        decoration: connected
+            ? const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    ColorConstants.onColorOne,
+                    ColorConstants.onColorTwo,
+                    ColorConstants.onColorThree,
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(35),
+                  bottomLeft: Radius.circular(17),
+                  topRight: Radius.circular(17),
+                  topLeft: Radius.circular(35),
+                ))
+            : BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF747D8C).withOpacity(0.5),
+                    blurRadius: 16,
+                    offset: const Offset(8, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
+                    blurRadius: 16,
+                    offset: const Offset(-8, -8),
+                  ),
+                ],
+                gradient: const LinearGradient(
+                  colors: [
+                    ColorConstants.backgroundColorOne,
+                    ColorConstants.backgroundColorTwo,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(35),
+                  bottomLeft: Radius.circular(17),
+                  topRight: Radius.circular(17),
+                  topLeft: Radius.circular(35),
+                ),
+              ),
         child: ListTile(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          tileColor: connected
-              ? Theme.of(context).brightness == Brightness.dark
-                  ? kTertiary
-                  : kTertiaryLight
-              : Theme.of(context).brightness == Brightness.dark
-                  ? kSecondary
-                  : kSecondaryLight,
           title: Text(
             device.platformName.isEmpty ? 'N/A' : device.platformName,
             style: const TextStyle(fontSize: 16),
@@ -201,7 +260,8 @@ class _ScanPageState extends ConsumerState<ScanPage> {
             error: (error, stackTrace) => const SizedBox(),
             loading: () => const CircularProgressIndicator(),
           ),
-          leading: const Icon(Icons.bluetooth, color: Colors.blue),
+          leading: Icon(Icons.bluetooth,
+              color: connected ? Colors.white : Colors.blue),
           onTap: () {
             bluetoothNotifier.connectToDevice(device: device, context: context);
             logger.i('Connecting to ${device.platformName}');
@@ -215,30 +275,22 @@ class _ScanPageState extends ConsumerState<ScanPage> {
     if (rssi > -60) {
       return Icon(
         Icons.signal_cellular_alt_rounded,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? kPrimary
-            : kPrimaryLight,
+        color: ColorConstants.darkColor,
       );
     } else if (rssi > -70) {
       return Icon(
         Icons.signal_cellular_alt_2_bar_sharp,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? kPrimary
-            : kPrimaryLight,
+        color: ColorConstants.darkColor,
       );
     } else if (rssi > -80) {
       return Icon(
         Icons.signal_cellular_alt_1_bar,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? kPrimary
-            : kPrimaryLight,
+        color: ColorConstants.darkColor,
       );
     } else {
       return Icon(
         Icons.signal_cellular_connected_no_internet_0_bar,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? kPrimary
-            : kPrimaryLight,
+        color: ColorConstants.darkColor,
       );
     }
   }

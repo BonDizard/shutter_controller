@@ -1,6 +1,10 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'dart:io' show Platform;
+import 'package:shutter/core/common/reusable_button.dart';
+
+import '../../core/constants/color_constant.dart';
 
 class BluetoothOffScreen extends StatelessWidget {
   final BluetoothAdapterState bluetoothAdapterState;
@@ -49,25 +53,26 @@ class BluetoothOffScreen extends StatelessWidget {
             const Padding(padding: EdgeInsets.all(16.0)),
             Text(
               message,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                  ),
+              style: const TextStyle(
+                fontFamily: 'Alatsi',
+                color: Colors.white,
+                fontSize: 30,
+              ),
             ),
             const Padding(padding: EdgeInsets.all(8.0)),
-            Text(
+            const Text(
               'Please enable Bluetooth to connect to devices.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white70,
-                  ),
+              style: TextStyle(
+                fontFamily: 'Alatsi',
+                color: ColorConstants.darkColor,
+              ),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            ElevatedButton(
+            ReusableButton(
               onPressed: () async {
                 await requestBluetoothPermission();
               },
-              child: const Text(
-                'Turn on Bluetooth',
-              ),
+              buttonText: 'Turn on Bluetooth',
             ),
           ],
         ),

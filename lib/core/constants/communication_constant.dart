@@ -6,4 +6,5 @@ class CommunicationConstant {
   static const String autoManualToggleKey = 'E';
   static const String onTimeKey = 'O';
   static const String offTimeKey = 'F';
+  static const String lightToggleKey = 'L';
 }
