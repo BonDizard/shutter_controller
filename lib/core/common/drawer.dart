@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shutter/core/constants/color_constant.dart';
 import 'package:shutter/models/parameters_model.dart';
+
 import '../../features/repository/bluetooth_provider.dart';
 import '../../features/repository/parameters_provider.dart';
 
@@ -59,6 +61,8 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     final connectionStatus = ref.watch(
       connectionStateProvider(widget.parametersModel.device),
     );
@@ -82,7 +86,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    height: 90,
+                    height: height * 0.07,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
@@ -94,7 +98,11 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 ),
                 Text(
                   'Spec - scientific',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  style: TextStyle(
+                    fontFamily: 'Alatsi',
+                    color: ColorConstants.darkColor,
+                    fontSize: width * 0.04,
+                  ),
                 ),
               ],
             ),

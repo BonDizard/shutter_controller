@@ -20,6 +20,7 @@ class _ReusableIconButtonState extends State<ReusableIconButton> {
       onTap: () {
         setState(() {
           isOn = !isOn;
+          BLEConstants.lightIsOn = !BLEConstants.lightIsOn;
         });
       },
       child: AnimatedContainer(

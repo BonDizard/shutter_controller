@@ -106,69 +106,72 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
         backgroundColor: Colors.transparent,
       ),
       backgroundColor: ColorConstants.backgroundColorTwo,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: width * 0.1),
-                child: GestureDetector(
-                  onTap: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: Container(
-                    height: width * 0.12,
-                    width: width * 0.12,
-                    decoration: BoxDecoration(
-                      color: ColorConstants.backgroundColorTwo,
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF747D8C).withOpacity(0.5),
-                          blurRadius: 16,
-                          offset: const Offset(8, 8),
-                        ),
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.7),
-                          blurRadius: 16,
-                          offset: const Offset(-8, -8),
-                        ),
-                      ],
+      body: Builder(
+        builder: (context) => Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: width * 0.1),
+                  child: GestureDetector(
+                    onTap: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    child: Container(
+                      height: width * 0.12,
+                      width: width * 0.12,
+                      decoration: BoxDecoration(
+                        color: ColorConstants.backgroundColorTwo,
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF747D8C).withOpacity(0.5),
+                            blurRadius: 16,
+                            offset: const Offset(8, 8),
+                          ),
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.7),
+                            blurRadius: 16,
+                            offset: const Offset(-8, -8),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        'assets/images/menu_icon.png',
+                        width: width * 0.1,
+                      ),
                     ),
-                    child: Image.asset('assets/images/menu_icon.png'),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: width * 0.1),
-                child: ConnectionStatusIndicator(
-                  device: updatedDevice.device,
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: width * 0.1,
-          ),
-          Flexible(
-            child: SizedBox(
-              width: width * 0.7,
-              child: Image.asset('assets/images/logo.png'),
+                Padding(
+                  padding: EdgeInsets.only(right: width * 0.1),
+                  child: ConnectionStatusIndicator(
+                    device: updatedDevice.device,
+                  ),
+                )
+              ],
             ),
-          ),
-          Center(
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Flexible(
-                          child: ReusableCommunicationButton(
+            SizedBox(
+              height: width * 0.1,
+            ),
+            Flexible(
+              child: SizedBox(
+                width: width * 0.7,
+                child: Image.asset('assets/images/logo.png'),
+              ),
+            ),
+            Center(
+              child: Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          DeviceControlButton(
                             buttonText: 'S',
                             onPressed: () {
                               bluetoothNotifier.writeToDevice(
@@ -180,11 +183,8 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                               );
                             },
                           ),
-                        ),
-                        Flexible(
-                          child: ReusableCommunicationButton(
+                          DeviceControlButton(
                             buttonText: '1',
-                            mirror: false,
                             onPressed: () {
                               bluetoothNotifier.writeToDevice(
                                 services: updatedDevice.services,
@@ -194,17 +194,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                               );
                             },
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: height * 0.02),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Flexible(
-                          child: ReusableCommunicationButton(
+                        ],
+                      ),
+                      SizedBox(height: height * 0.02),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          DeviceControlButton(
                             buttonText: '2',
-                            mirror: false,
                             onPressed: () {
                               bluetoothNotifier.writeToDevice(
                                 services: updatedDevice.services,
@@ -214,9 +211,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                               );
                             },
                           ),
-                        ),
-                        Flexible(
-                          child: ReusableCommunicationButton(
+                          DeviceControlButton(
                             buttonText: '3',
                             onPressed: () {
                               bluetoothNotifier.writeToDevice(
@@ -227,344 +222,302 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                               );
                             },
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: ReusableIconButton(
-                      onPressed: () {
-                        bluetoothNotifier.writeToDevice(
-                          services: updatedDevice.services,
-                          uuid: updatedDevice.writeUuid,
-                          device: updatedDevice.device,
-                          data: CommunicationConstant.lightToggleKey,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: height * 0.04,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: ColorConstants.surface,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(width * 0.02),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(width * 0.02),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF747D8C).withOpacity(0.5),
-                            blurRadius: 16,
-                            offset: const Offset(8, 8),
-                          ),
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
-                            blurRadius: 16,
-                            offset: const Offset(-8, -8),
-                          ),
                         ],
                       ),
-                      child: Container(
-                        width: width * 0.8,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ColorConstants.backgroundColorOne,
-                              ColorConstants.backgroundColorTwo,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(35),
-                            bottomLeft: Radius.circular(17),
-                            topRight: Radius.circular(17),
-                            topLeft: Radius.circular(35),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: width * 0.04,
-                                bottom: width * 0.02,
-                                top: width * 0.02,
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      ColorConstants.backgroundColorOne,
-                                      ColorConstants.backgroundColorTwo,
-                                    ],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(width * 0.02),
-                                      child: const Icon(CupertinoIcons.clock),
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.025,
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.3,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: width * 0.015,
-                                          right: width * 0.08,
-                                        ),
-                                        child: TextField(
-                                          controller: onTimeController,
-                                          decoration: InputDecoration(
-                                            hintText: 'On Time',
-                                            hintStyle: TextStyle(
-                                              fontFamily: 'Alatsi',
-                                              fontSize: width * 0.03,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Text(
-                              BLEConstants.onTimeReceivedFromBleDevice
-                                  .toString(),
-                              style: TextStyle(
-                                  fontFamily: 'Alatsi', fontSize: width * 0.05),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 20),
-                              child: IconButton(
-                                onPressed: () {
-                                  if (kDebugMode) {
-                                    print(
-                                        'Sending data to BLE: ${onTimeController.text}');
-                                  }
-                                  if (onTimeController.text.trim().isEmpty) {
-                                    logger.i('on Time Empty');
-                                    CustomToast.showToast(
-                                      'on Time Empty',
-                                    );
-                                  } else {
-                                    bluetoothNotifier.writeToDevice(
-                                      services: updatedDevice.services,
-                                      uuid: updatedDevice.writeUuid,
-                                      device: updatedDevice.device,
-                                      data: CommunicationConstant.onTimeKey +
-                                          onTimeController.text +
-                                          CommunicationConstant
-                                              .autoManualToggleKey,
-                                    );
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.send_sharp,
-                                  size: width * 0.08,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-                  SizedBox(height: height * 0.01),
-                  Padding(
-                    padding: EdgeInsets.all(width * 0.02),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF747D8C).withOpacity(0.5),
-                            blurRadius: 16,
-                            offset: const Offset(8, 8),
-                          ),
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
-                            blurRadius: 16,
-                            offset: const Offset(-8, -8),
-                          ),
-                        ],
-                      ),
-                      child: Container(
-                        width: width * 0.8,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ColorConstants.backgroundColorOne,
-                              ColorConstants.backgroundColorTwo,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(35),
-                            bottomLeft: Radius.circular(17),
-                            topRight: Radius.circular(17),
-                            topLeft: Radius.circular(35),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: width * 0.04,
-                                bottom: width * 0.02,
-                                top: width * 0.02,
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      ColorConstants.backgroundColorOne,
-                                      ColorConstants.backgroundColorTwo,
-                                    ],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(width * 0.02),
-                                      child: const Icon(CupertinoIcons.clock),
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.025,
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.3,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: width * 0.015,
-                                          right: width * 0.08,
-                                        ),
-                                        child: TextField(
-                                          controller: offTimeController,
-                                          decoration: InputDecoration(
-                                            hintText: 'Off Time',
-                                            hintStyle: TextStyle(
-                                              fontFamily: 'Alatsi',
-                                              fontSize: width * 0.03,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Text(
-                              BLEConstants.offTimeReceivedFromBleDevice
-                                  .toString(),
-                              style: TextStyle(
-                                  fontFamily: 'Alatsi', fontSize: width * 0.05),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 20),
-                              child: IconButton(
-                                onPressed: () {
-                                  if (kDebugMode) {
-                                    print(
-                                        'Sending data to BLE: ${onTimeController.text}');
-                                  }
-                                  if (onTimeController.text.trim().isEmpty) {
-                                    logger.i('on Time Empty');
-                                    CustomToast.showToast(
-                                      'on Time Empty',
-                                    );
-                                  } else {
-                                    bluetoothNotifier.writeToDevice(
-                                      services: updatedDevice.services,
-                                      uuid: updatedDevice.writeUuid,
-                                      device: updatedDevice.device,
-                                      data: CommunicationConstant.offTimeKey +
-                                          offTimeController.text +
-                                          CommunicationConstant
-                                              .autoManualToggleKey,
-                                    );
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.send_sharp,
-                                  size: width * 0.08,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: ReusableIconButton(
+                        onPressed: () {
+                          bluetoothNotifier.writeToDevice(
+                            services: updatedDevice.services,
+                            uuid: updatedDevice.writeUuid,
+                            device: updatedDevice.device,
+                            data: CommunicationConstant.lightToggleKey,
+                          );
+                        },
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(
+              height: height * 0.04,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: ColorConstants.surface,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(width * 0.02),
+                child: Column(
+                  children: [
+                    TimeInputWidget(
+                      width: width,
+                      height: height,
+                      label: 'On Time',
+                      controller: onTimeController,
+                      onSend: () {
+                        _sendTimeToBle(onTimeController.text,
+                            CommunicationConstant.onTimeKey);
+                      },
+                      receivedTime:
+                          BLEConstants.onTimeReceivedFromBleDevice.toString(),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    TimeInputWidget(
+                      width: width,
+                      height: height,
+                      label: 'Off Time',
+                      controller: offTimeController,
+                      onSend: () {
+                        _sendTimeToBle(offTimeController.text,
+                            CommunicationConstant.offTimeKey);
+                      },
+                      receivedTime:
+                          BLEConstants.offTimeReceivedFromBleDevice.toString(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(top: width * 0.1, bottom: width * 0.1),
+                child: FlutterToggleTab(
+                  width: width * 0.17,
+                  borderRadius: width * 0.03,
+                  selectedBackgroundColors: const [
+                    ColorConstants.onColorOne,
+                    ColorConstants.onColorTwo,
+                    ColorConstants.onColorThree
+                  ],
+                  unSelectedBackgroundColors: const [ColorConstants.surface],
+                  selectedTextStyle: TextStyle(
+                    fontFamily: 'Alatsi',
+                    color: Colors.white,
+                    fontSize: width * 0.05,
+                  ),
+                  unSelectedTextStyle: TextStyle(
+                    fontFamily: 'Alatsi',
+                    color: ColorConstants.darkColor,
+                    fontSize: width * 0.05,
+                  ),
+                  labels: const ['Auto', 'Manual'],
+                  height: height * 0.07,
+                  selectedIndex: BLEConstants.autoManualToggleKey ? 0 : 1,
+                  selectedLabelIndex: (index) {
+                    setState(() {
+                      BLEConstants.autoManualToggleKey = index != 0;
+                    });
+                    bluetoothNotifier.writeToDevice(
+                      services: updatedDevice.services,
+                      uuid: updatedDevice.writeUuid,
+                      device: updatedDevice.device,
+                      data: CommunicationConstant.autoManualToggleKey,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _sendTimeToBle(String time, String key) {
+    if (time.trim().isEmpty) {
+      logger.i('$key Empty');
+      CustomToast.showToast('$key Empty');
+    } else {
+      final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+      final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
+      bluetoothNotifier.writeToDevice(
+        services: updatedDevice.services,
+        uuid: updatedDevice.writeUuid,
+        device: updatedDevice.device,
+        data: key + time + CommunicationConstant.autoManualToggleKey,
+      );
+    }
+  }
+}
+
+class DeviceControlButton extends StatelessWidget {
+  final String buttonText;
+  final VoidCallback onPressed;
+
+  const DeviceControlButton({
+    Key? key,
+    required this.buttonText,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: ReusableCommunicationButton(
+        buttonText: buttonText,
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+class TimeInputWidget extends StatelessWidget {
+  final double width;
+  final double height;
+  final String label;
+  final TextEditingController controller;
+  final VoidCallback onSend;
+  final String receivedTime;
+
+  const TimeInputWidget({
+    Key? key,
+    required this.width,
+    required this.height,
+    required this.label,
+    required this.controller,
+    required this.onSend,
+    required this.receivedTime,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(width * 0.02),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF747D8C).withOpacity(0.5),
+              blurRadius: 16,
+              offset: const Offset(8, 8),
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.5),
+              blurRadius: 16,
+              offset: const Offset(-8, -8),
+            ),
+          ],
+        ),
+        child: Container(
+          width: width * 0.8,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ColorConstants.backgroundColorOne,
+                ColorConstants.backgroundColorTwo,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomRight: Radius.circular(35),
+              bottomLeft: Radius.circular(17),
+              topRight: Radius.circular(17),
+              topLeft: Radius.circular(35),
+            ),
           ),
-          Flexible(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: width * 0.04,
+                  bottom: width * 0.02,
+                  top: width * 0.02,
+                ),
+                child: IconTextField(
+                  width: width,
+                  icon: CupertinoIcons.clock,
+                  controller: controller,
+                  hintText: label,
+                ),
+              ),
+              Text(
+                receivedTime,
+                style: TextStyle(
+                  fontFamily: 'Alatsi',
+                  fontSize: width * 0.05,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: IconButton(
+                  onPressed: onSend,
+                  icon: Icon(
+                    Icons.send_sharp,
+                    size: width * 0.08,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class IconTextField extends StatelessWidget {
+  final double width;
+  final IconData icon;
+  final TextEditingController controller;
+  final String hintText;
+
+  const IconTextField({
+    super.key,
+    required this.width,
+    required this.icon,
+    required this.controller,
+    required this.hintText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            ColorConstants.backgroundColorOne,
+            ColorConstants.backgroundColorTwo,
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(width * 0.02),
+            child: Icon(icon),
+          ),
+          SizedBox(
+            width: width * 0.025,
+          ),
+          SizedBox(
+            width: width * 0.3,
             child: Padding(
-              padding: EdgeInsets.only(top: width * 0.1, bottom: width * 0.1),
-              child: FlutterToggleTab(
-                width: width * 0.17,
-                borderRadius: width * 0.03,
-                selectedBackgroundColors: const [
-                  ColorConstants.onColorOne,
-                  ColorConstants.onColorTwo,
-                  ColorConstants.onColorThree
-                ],
-                unSelectedBackgroundColors: const [ColorConstants.surface],
-                selectedTextStyle: TextStyle(
-                  fontFamily: 'Alatsi',
-                  color: Colors.white,
-                  fontSize: width * 0.05,
+              padding: EdgeInsets.only(
+                bottom: width * 0.015,
+                right: width * 0.08,
+              ),
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: TextStyle(
+                    fontFamily: 'Alatsi',
+                    fontSize: width * 0.03,
+                  ),
                 ),
-                unSelectedTextStyle: TextStyle(
-                  fontFamily: 'Alatsi',
-                  color: ColorConstants.darkColor,
-                  fontSize: width * 0.05,
-                ),
-                labels: const ['Auto', 'Manual'],
-                height: height * 0.07,
-                selectedIndex: 0,
-                selectedLabelIndex: (index) {
-                  setState(() {
-                    BLEConstants.autoManualToggleKey = index != 0;
-                  });
-                  bluetoothNotifier.writeToDevice(
-                    services: updatedDevice.services,
-                    uuid: updatedDevice.writeUuid,
-                    device: updatedDevice.device,
-                    data: CommunicationConstant.autoManualToggleKey,
-                  );
-                },
               ),
             ),
           ),
