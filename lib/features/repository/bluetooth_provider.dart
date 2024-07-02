@@ -250,7 +250,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       double autoManual = autoManualMatch != null
           ? double.tryParse(autoManualMatch.group(1)!) ?? 0.0
           : 0.0;
-      BLEConstants.autoManualToggleKey = autoManual == 0 ? true : false;
+      BLEConstants.autoManualToggleKey = autoManual == 0 ? false : true;
       RegExpMatch? onTimeMatch = onTimeRegex.firstMatch(receivedString);
       double onTime = onTimeMatch != null
           ? double.tryParse(onTimeMatch.group(1)!) ?? 0.0

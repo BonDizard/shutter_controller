@@ -332,8 +332,8 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
 
   void _sendTimeToBle(String time, String key) {
     if (time.trim().isEmpty) {
-      logger.i('$key Empty');
-      CustomToast.showToast('$key Empty');
+      logger.i('$key time is Empty');
+      CustomToast.showToast('$key time is Empty');
     } else {
       final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
       final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
