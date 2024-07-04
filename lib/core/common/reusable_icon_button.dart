@@ -12,14 +12,12 @@ class ReusableIconButton extends StatefulWidget {
 }
 
 class _ReusableIconButtonState extends State<ReusableIconButton> {
-  bool isOn = BLEConstants.lightIsOn;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isOn = !isOn;
+          BLEConstants.lightIsOn = !BLEConstants.lightIsOn;
           BLEConstants.lightIsOn = !BLEConstants.lightIsOn;
         });
       },
@@ -37,7 +35,7 @@ class _ReusableIconButtonState extends State<ReusableIconButton> {
           ],
           color: ColorConstants.darkColor,
           gradient: LinearGradient(
-            colors: isOn
+            colors: BLEConstants.lightIsOn
                 ? [ColorConstants.surface, ColorConstants.surface]
                 : [
                     ColorConstants.backgroundColorOne,
@@ -55,7 +53,7 @@ class _ReusableIconButtonState extends State<ReusableIconButton> {
           child: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: isOn
+                  colors: BLEConstants.lightIsOn
                       ? [
                           ColorConstants.onColorOne,
                           ColorConstants.onColorTwo,
@@ -72,10 +70,12 @@ class _ReusableIconButtonState extends State<ReusableIconButton> {
             child: IconButton(
               onPressed: widget.onPressed,
               icon: Icon(
-                isOn
+                BLEConstants.lightIsOn
                     ? CupertinoIcons.lightbulb
                     : CupertinoIcons.lightbulb_slash,
-                color: isOn ? ColorConstants.surface : ColorConstants.darkColor,
+                color: BLEConstants.lightIsOn
+                    ? ColorConstants.surface
+                    : ColorConstants.darkColor,
               ),
             ),
           ),
