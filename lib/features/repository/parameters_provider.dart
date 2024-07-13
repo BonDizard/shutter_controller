@@ -72,6 +72,6 @@ class ParametersModelNotifier extends StateNotifier<List<ParametersModel>> {
 final parametersModelProvider =
     StateNotifierProvider<ParametersModelNotifier, List<ParametersModel>>(
         (ref) {
-  final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+  final bluetoothNotifier = ref.watch(bluetoothProvider.notifier);
   return ParametersModelNotifier(bluetoothNotifier);
 });

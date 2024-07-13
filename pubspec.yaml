@@ -69,6 +69,7 @@ flutter:
   assets:
     - assets/images/menu_icon.png
     - assets/images/logo.png
+    - assets/lottie/loader.json
 
   fonts:
     - family: Alatsi

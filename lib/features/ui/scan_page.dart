@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shutter/core/common/loading.dart';
 import 'package:shutter/core/common/reusable_button.dart';
-
 import '../../core/constants/color_constant.dart';
 import '../repository/bluetooth_provider.dart';
 import 'all_device_dashboard.dart';
@@ -91,11 +90,12 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                         ),
                       ),
                     ReusableButton(
-                        onPressed: () {
-                          bluetoothNotifier.startScan();
-                          bluetoothNotifier.fetchConnectedDevices();
-                        },
-                        buttonText: 'Scan'),
+                      onPressed: () {
+                        bluetoothNotifier.startScan();
+                        bluetoothNotifier.fetchConnectedDevices();
+                      },
+                      buttonText: 'Scan',
+                    ),
                     const SizedBox(
                         height: 8), // Add space between button and divider
                     const Divider(
@@ -122,14 +122,14 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                         color: ColorConstants.darkColor.withOpacity(.5),
                       ),
                     ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: bluetoothState.connectedDevices.length,
-                      itemBuilder: (context, index) {
-                        final device = bluetoothState.connectedDevices[index];
-                        return buildConnectedDeviceTile(device, true);
-                      },
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: bluetoothState.connectedDevices.length,
+                        itemBuilder: (context, index) {
+                          final device = bluetoothState.connectedDevices[index];
+                          return buildConnectedDeviceTile(device, true);
+                        },
+                      ),
                     ),
                   ],
                 ),

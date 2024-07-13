@@ -166,11 +166,13 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
   }
 
   Future<String> readTheDataFromDevice({
-    required ParametersModel parametersModel,
+    required BluetoothDevice device,
     required String uuid,
     required BuildContext context,
   }) async {
     String receivedData = '';
+    ParametersModel parametersModel =
+        await convertBluetoothDeviceToParameterModel(device);
     try {
       for (var service in parametersModel.services) {
         for (BluetoothCharacteristic c in service.characteristics) {
@@ -180,28 +182,16 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
               await for (var value in c.lastValueStream) {
                 receivedData = String.fromCharCodes(value);
 
-                // if (kDebugMode) {
-                //   print('Decoded data: $receivedData');
-                // }
-
                 processReceivedData(
                     receivedString: receivedData, context: context);
                 break; // Assuming you want to stop listening after the first received data
               }
-            } else {
-              if (kDebugMode) {
-                //   print('READ property not supported by this characteristic');
-              }
-            }
-          } else {
-            if (kDebugMode) {
-              // print(
-              //     'No matching UUID; characteristic was ${c.uuid} and selected UUID was $parametersModel.readUuid');
             }
           }
         }
       }
     } catch (e) {
+      CustomToast.showToast('Error while reading: $e');
       if (kDebugMode) {
         print('Error while reading: $e');
       }
@@ -218,9 +208,9 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
       RegExp autoManualRegex = RegExp(r'E:([\d.]+)', caseSensitive: false);
       RegExp onTimeRegex = RegExp(r'O:([\d.]+)', caseSensitive: false);
       RegExp offTimeRegex = RegExp(r'F:([\d.]+)', caseSensitive: false);
-      RegExp aRegex = RegExp(r'1:([\d.]+)', caseSensitive: false);
-      RegExp bRegex = RegExp(r'2:([\d.]+)', caseSensitive: false);
-      RegExp cRegex = RegExp(r'3:([\d.]+)', caseSensitive: false);
+      RegExp aRegex = RegExp(r'A:([\d.]+)', caseSensitive: false);
+      RegExp bRegex = RegExp(r'B:([\d.]+)', caseSensitive: false);
+      RegExp cRegex = RegExp(r'C:([\d.]+)', caseSensitive: false);
       RegExp lRegex = RegExp(r'L:([\d.]+)', caseSensitive: false);
 
       RegExpMatch? lRegexMatch = lRegex.firstMatch(receivedString);
@@ -301,32 +291,36 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     required String data,
     required List<BluetoothService> services,
   }) async {
-    for (var service in services) {
-      for (BluetoothCharacteristic character in service.characteristics) {
-        if (character.uuid.toString() == uuid) {
-          if (character.properties.writeWithoutResponse ||
-              character.properties.write) {
-            character.setNotifyValue(true);
+    try {
+      for (var service in services) {
+        for (BluetoothCharacteristic character in service.characteristics) {
+          if (character.uuid.toString() == uuid) {
+            if (character.properties.writeWithoutResponse ||
+                character.properties.write) {
+              character.setNotifyValue(true);
 
-            character.write(
-              data.codeUnits,
-              withoutResponse: true,
-            );
-            if (kDebugMode) {
-              print('wrote the value: $data');
+              character.write(
+                data.codeUnits,
+                withoutResponse: true,
+              );
+              if (kDebugMode) {
+                print('wrote the value: $data');
+              }
+            } else {
+              if (kDebugMode) {
+                print('Write property not supported by this characteristic');
+              }
             }
           } else {
             if (kDebugMode) {
-              print('Write property not supported by this characteristic');
+              print(
+                  'no matching uuid c was ${character.uuid} and selected uid was ');
             }
-          }
-        } else {
-          if (kDebugMode) {
-            print(
-                'no matching uuid c was ${character.uuid} and selected uid was ');
           }
         }
       }
+    } catch (e) {
+      CustomToast.showToast('Error while writing');
     }
   }
 }

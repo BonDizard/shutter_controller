@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shutter/core/common/loading.dart';
-
 import '../../core/constants/constants.dart';
 import '../repository/bluetooth_provider.dart';
 import '../repository/parameters_provider.dart';
@@ -15,7 +14,7 @@ class AllDevicePages extends ConsumerStatefulWidget {
 }
 
 class _AllDevicePagesState extends ConsumerState<AllDevicePages> {
-  int _selectedIndex = 0; // State to keep track of the selected index
+  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -26,14 +25,18 @@ class _AllDevicePagesState extends ConsumerState<AllDevicePages> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _fetchParameters();
   }
 
   Future<void> _fetchParameters() async {
     final bluetoothState = ref.read(bluetoothProvider);
     final devices = bluetoothState.connectedDevices;
-
-    ref.read(parametersModelProvider.notifier).fetchParameters(devices);
+    await ref.read(parametersModelProvider.notifier).fetchParameters(devices);
   }
 
   @override
@@ -51,10 +54,11 @@ class _AllDevicePagesState extends ConsumerState<AllDevicePages> {
                   children: [
                     const Loader(),
                     Center(
-                        child: Text(
-                      'No Connected Devices',
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    )),
+                      child: Text(
+                        'No Connected Devices',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                    ),
                   ],
                 )
               : IndexedStack(
@@ -73,7 +77,7 @@ class _AllDevicePagesState extends ConsumerState<AllDevicePages> {
                 parameterModels.length,
                 (index) => BottomNavigationBarItem(
                   backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
+                      Theme.of(context).brightness == Brightness.light
                           ? kSecondary
                           : kSecondaryLight,
                   icon: Icon(

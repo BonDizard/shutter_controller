@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:logger/logger.dart';
-
 import '../../core/common/connectio_status_bar.dart';
 import '../../core/common/custom_toast.dart';
 import '../../core/common/drawer.dart';
@@ -59,7 +57,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
     if (uuid == null) return;
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
     var data = await bluetoothNotifier.readTheDataFromDevice(
-        parametersModel: widget.device, uuid: uuid, context: context);
+        device: widget.device.device, uuid: uuid, context: context);
     if (mounted) {
       setState(() {
         receivedData = data;
@@ -184,14 +182,14 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                             },
                           ),
                           DeviceControlButton(
-                            buttonText: '1',
+                            buttonText: 'A',
                             onPressed: () {
-                              bluetoothNotifier.writeToDevice(
-                                services: updatedDevice.services,
-                                uuid: updatedDevice.writeUuid,
-                                device: updatedDevice.device,
-                                data: CommunicationConstant.relayOneToggleKey,
-                              );
+                              // bluetoothNotifier.writeToDevice(
+                              //   services: updatedDevice.services,
+                              //   uuid: updatedDevice.writeUuid,
+                              //   device: updatedDevice.device,
+                              //   data: CommunicationConstant.relayOneToggleKey,
+                              // );
                             },
                           ),
                         ],
@@ -201,25 +199,25 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           DeviceControlButton(
-                            buttonText: '2',
+                            buttonText: 'B',
                             onPressed: () {
-                              bluetoothNotifier.writeToDevice(
-                                services: updatedDevice.services,
-                                uuid: updatedDevice.writeUuid,
-                                device: updatedDevice.device,
-                                data: CommunicationConstant.relayTwoToggleKey,
-                              );
+                              // bluetoothNotifier.writeToDevice(
+                              //   services: updatedDevice.services,
+                              //   uuid: updatedDevice.writeUuid,
+                              //   device: updatedDevice.device,
+                              //   data: CommunicationConstant.relayTwoToggleKey,
+                              // );
                             },
                           ),
                           DeviceControlButton(
-                            buttonText: '3',
+                            buttonText: 'C',
                             onPressed: () {
-                              bluetoothNotifier.writeToDevice(
-                                services: updatedDevice.services,
-                                uuid: updatedDevice.writeUuid,
-                                device: updatedDevice.device,
-                                data: CommunicationConstant.relayThreeToggleKey,
-                              );
+                              // bluetoothNotifier.writeToDevice(
+                              //   services: updatedDevice.services,
+                              //   uuid: updatedDevice.writeUuid,
+                              //   device: updatedDevice.device,
+                              //   data: CommunicationConstant.relayThreeToggleKey,
+                              // );
                             },
                           ),
                         ],

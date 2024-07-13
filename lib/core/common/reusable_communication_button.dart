@@ -35,13 +35,13 @@ class ReusableCommunicationButtonState
       case 'S':
         isOn = BLEConstants.sIsOn;
         break;
-      case '1':
+      case 'A':
         isOn = BLEConstants.oneIsOn;
         break;
-      case '2':
+      case 'B':
         isOn = BLEConstants.twoIsOn;
         break;
-      case '3':
+      case 'C':
         isOn = BLEConstants.threeIsOn;
         break;
       default:

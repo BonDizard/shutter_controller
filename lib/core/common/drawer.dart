@@ -66,7 +66,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
     final connectionStatus = ref.watch(
       connectionStateProvider(widget.parametersModel.device),
     );
-    final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+    final bluetoothNotifier = ref.watch(bluetoothProvider.notifier);
 
     final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
 
@@ -90,7 +90,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
-                        'assets/images/app_logo/logo.png',
+                        'assets/images/logo.png',
                         fit: BoxFit.cover,
                       ),
                     ),
