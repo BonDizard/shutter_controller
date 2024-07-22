@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:shutter/core/common/reusable_button.dart';
 
+import '../../core/common/custom_toast.dart';
 import '../../core/constants/color_constant.dart';
 
 class BluetoothOffScreen extends StatelessWidget {
@@ -81,8 +82,12 @@ class BluetoothOffScreen extends StatelessWidget {
   }
 
   Future<void> requestBluetoothPermission() async {
-    if (Platform.isAndroid) {
-      await FlutterBluePlus.turnOn(); // Request the user to turn on Bluetooth
+    try {
+      if (Platform.isAndroid) {
+        await FlutterBluePlus.turnOn();
+      }
+    } catch (e) {
+      CustomToast.showToast("Error Turning On: $e");
     }
   }
 }

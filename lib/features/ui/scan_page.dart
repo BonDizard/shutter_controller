@@ -17,9 +17,18 @@ class ScanPage extends ConsumerStatefulWidget {
 }
 
 class _ScanPageState extends ConsumerState<ScanPage> {
+  late BluetoothNotifier bluetoothNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    bluetoothNotifier = ref.read(bluetoothProvider.notifier);
+  }
+
   @override
   void dispose() {
-    ref.watch(bluetoothProvider.notifier).disconnectAllDevices();
+    // Use the notifier directly instead of ref in the dispose method
+    bluetoothNotifier.disconnectAllDevices();
     super.dispose();
   }
 
