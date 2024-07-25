@@ -150,9 +150,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
       floatingActionButton: Padding(
         padding: EdgeInsets.only(right: width * 0.07, bottom: width * 0.07),
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15)),
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               colors: [
                 ColorConstants.onColorOne,
                 ColorConstants.onColorTwo,
@@ -282,22 +282,22 @@ class _ScanPageState extends ConsumerState<ScanPage> {
 
   Widget getRangeIcon(int rssi) {
     if (rssi > -60) {
-      return Icon(
+      return const Icon(
         Icons.signal_cellular_alt_rounded,
         color: ColorConstants.darkColor,
       );
     } else if (rssi > -70) {
-      return Icon(
+      return const Icon(
         Icons.signal_cellular_alt_2_bar_sharp,
         color: ColorConstants.darkColor,
       );
     } else if (rssi > -80) {
-      return Icon(
+      return const Icon(
         Icons.signal_cellular_alt_1_bar,
         color: ColorConstants.darkColor,
       );
     } else {
-      return Icon(
+      return const Icon(
         Icons.signal_cellular_connected_no_internet_0_bar,
         color: ColorConstants.darkColor,
       );

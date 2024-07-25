@@ -52,21 +52,21 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     });
 
     FlutterBluePlus.scanResults.listen((results) {
-      this.state = this.state.copyWith(scanResults: results);
+      state = state.copyWith(scanResults: results);
     });
   }
 
-  void fetchConnectedDevices() async {
-    List<BluetoothDevice> devices = await FlutterBluePlus.connectedDevices;
-    state = this.state.copyWith(connectedDevices: devices);
+  void fetchConnectedDevices() {
+    List<BluetoothDevice> devices = FlutterBluePlus.connectedDevices;
+    state = state.copyWith(connectedDevices: devices);
   }
 
   void startScan() {
-    state = this.state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true);
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 4)).then((_) {
-      state = this.state.copyWith(isLoading: false);
+      state = state.copyWith(isLoading: false);
       FlutterBluePlus.scanResults.listen((results) {
-        this.state = this.state.copyWith(scanResults: results);
+        state = state.copyWith(scanResults: results);
       });
     }).catchError((e) {
       logger.e('Error starting scan: $e');
@@ -87,7 +87,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
 
   void stopScan() {
     FlutterBluePlus.stopScan();
-    state = this.state.copyWith(scanResults: [], isLoading: false);
+    state = state.copyWith(scanResults: [], isLoading: false);
   }
 
   Future<void> connectToDevice({
@@ -97,11 +97,11 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     try {
       await device.connect();
 
-      state = this.state.copyWith(
-            scanResults: state.scanResults
-                .where((result) => result.device.remoteId != device.remoteId)
-                .toList(),
-          );
+      state = state.copyWith(
+        scanResults: state.scanResults
+            .where((result) => result.device.remoteId != device.remoteId)
+            .toList(),
+      );
 
       fetchConnectedDevices();
 
@@ -183,7 +183,9 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
                 receivedData = String.fromCharCodes(value);
 
                 processReceivedData(
-                    receivedString: receivedData, context: context);
+                  receivedString: receivedData,
+                  context: context,
+                );
                 break; // Assuming you want to stop listening after the first received data
               }
             }
