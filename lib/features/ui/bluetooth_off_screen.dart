@@ -1,9 +1,7 @@
 import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:shutter/core/common/reusable_button.dart';
-
 import '../../core/common/custom_toast.dart';
 import '../../core/constants/color_constant.dart';
 

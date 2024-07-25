@@ -51,10 +51,9 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   @override
   Widget build(BuildContext context) {
     Widget screen;
-    if (_adapterState == BluetoothAdapterState.on
-        // || _adapterState == BluetoothAdapterState.turningOn
-        // || _adapterState == BluetoothAdapterState.unknown
-        ) {
+    if (_adapterState == BluetoothAdapterState.on ||
+        _adapterState == BluetoothAdapterState.turningOn ||
+        _adapterState == BluetoothAdapterState.unknown) {
       screen = const ScanPage();
     } else {
       screen = BluetoothOffScreen(
