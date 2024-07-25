@@ -29,7 +29,7 @@ class BluetoothOffScreen extends StatelessWidget {
         break;
       case BluetoothAdapterState.on:
         // This shouldn't reach this screen, you can navigate elsewhere.
-        Navigator.of(context).pop(); // Remove from navigation stack
+        Future.microtask(() => Navigator.of(context).pop()); // Delay the pop
         return Container(); // Empty container to prevent rendering issues
       default:
         message = 'Unexpected State';
