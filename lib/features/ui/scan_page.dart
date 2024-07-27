@@ -100,6 +100,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                       ),
                     ReusableButton(
                       onPressed: () {
+                        print('scan button pressed');
                         bluetoothNotifier.startScan();
                         bluetoothNotifier.fetchConnectedDevices();
                       },

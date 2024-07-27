@@ -52,21 +52,23 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     });
 
     FlutterBluePlus.scanResults.listen((results) {
-      state = state.copyWith(scanResults: results);
+      state = this.state.copyWith(scanResults: results);
     });
   }
 
-  void fetchConnectedDevices() {
-    List<BluetoothDevice> devices = FlutterBluePlus.connectedDevices;
-    state = state.copyWith(connectedDevices: devices);
+  void fetchConnectedDevices() async {
+    List<BluetoothDevice> devices = await FlutterBluePlus.connectedDevices;
+    state = this.state.copyWith(connectedDevices: devices);
   }
 
   void startScan() {
-    state = state.copyWith(isLoading: true);
+    print('start scan called');
+    state = this.state.copyWith(isLoading: true);
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 4)).then((_) {
-      state = state.copyWith(isLoading: false);
+      state = this.state.copyWith(isLoading: false);
       FlutterBluePlus.scanResults.listen((results) {
-        state = state.copyWith(scanResults: results);
+        print('results: $results');
+        state = this.state.copyWith(scanResults: results);
       });
     }).catchError((e) {
       logger.e('Error starting scan: $e');
@@ -97,11 +99,13 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     try {
       await device.connect();
 
-      state = state.copyWith(
-        scanResults: state.scanResults
-            .where((result) => result.device.remoteId != device.remoteId)
-            .toList(),
-      );
+      state = this.state.copyWith(
+            scanResults: this
+                .state
+                .scanResults
+                .where((result) => result.device.remoteId != device.remoteId)
+                .toList(),
+          );
 
       fetchConnectedDevices();
 
@@ -168,7 +172,6 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
   Future<String> readTheDataFromDevice({
     required BluetoothDevice device,
     required String uuid,
-    required BuildContext context,
   }) async {
     String receivedData = '';
     ParametersModel parametersModel =
@@ -184,7 +187,6 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
 
                 processReceivedData(
                   receivedString: receivedData,
-                  context: context,
                 );
                 break; // Assuming you want to stop listening after the first received data
               }
@@ -201,10 +203,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothStateModel> {
     return receivedData;
   }
 
-  void processReceivedData({
-    required String receivedString,
-    required BuildContext context,
-  }) {
+  void processReceivedData({required String receivedString}) {
     try {
       RegExp shutterRegex = RegExp(r'S:([\d.]+)', caseSensitive: false);
       RegExp autoManualRegex = RegExp(r'E:([\d.]+)', caseSensitive: false);

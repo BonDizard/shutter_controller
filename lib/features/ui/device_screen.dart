@@ -57,7 +57,9 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
     if (uuid == null) return;
     final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
     var data = await bluetoothNotifier.readTheDataFromDevice(
-        device: widget.device.device, uuid: uuid, context: context);
+      device: widget.device.device,
+      uuid: uuid,
+    );
     if (mounted) {
       setState(() {
         receivedData = data;
