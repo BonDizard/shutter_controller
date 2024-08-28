@@ -262,11 +262,19 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                       label: 'On Time',
                       controller: onTimeController,
                       onSend: () {
-                        _sendTimeToBle(onTimeController.text,
-                            CommunicationConstant.onTimeKey);
+                        try {
+                          double onTimeDouble =
+                              double.parse(onTimeController.text.trim());
+                          onTimeDouble = onTimeDouble * 10;
+                          _sendTimeToBle(onTimeDouble.toString(),
+                              CommunicationConstant.onTimeKey);
+                        } catch (e) {
+                          CustomToast.showToast("On time error: $e");
+                        }
                       },
                       receivedTime:
-                          BLEConstants.onTimeReceivedFromBleDevice.toString(),
+                          (BLEConstants.onTimeReceivedFromBleDevice * 10)
+                              .toString(),
                     ),
                     SizedBox(height: height * 0.01),
                     TimeInputWidget(
@@ -275,11 +283,19 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                       label: 'Off Time',
                       controller: offTimeController,
                       onSend: () {
-                        _sendTimeToBle(offTimeController.text,
-                            CommunicationConstant.offTimeKey);
+                        try {
+                          double offTimeDouble =
+                              double.parse(offTimeController.text.trim());
+                          offTimeDouble = offTimeDouble * 10;
+                          _sendTimeToBle(offTimeDouble.toString(),
+                              CommunicationConstant.offTimeKey);
+                        } catch (e) {
+                          CustomToast.showToast("Off time error: $e");
+                        }
                       },
                       receivedTime:
-                          BLEConstants.offTimeReceivedFromBleDevice.toString(),
+                          (BLEConstants.offTimeReceivedFromBleDevice * 10)
+                              .toString(),
                     ),
                   ],
                 ),
@@ -337,6 +353,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
     } else {
       final bluetoothNotifier = ref.read(bluetoothProvider.notifier);
       final updatedDevice = ref.watch(parametersModelProvider)[widget.index];
+
       bluetoothNotifier.writeToDevice(
         services: updatedDevice.services,
         uuid: updatedDevice.writeUuid,
