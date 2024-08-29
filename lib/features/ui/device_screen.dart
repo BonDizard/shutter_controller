@@ -273,7 +273,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                         }
                       },
                       receivedTime:
-                          (BLEConstants.onTimeReceivedFromBleDevice * 10)
+                          (BLEConstants.onTimeReceivedFromBleDevice / 10)
                               .toString(),
                     ),
                     SizedBox(height: height * 0.01),
@@ -294,7 +294,7 @@ class _DeviceScreenState extends ConsumerState<DeviceScreen> {
                         }
                       },
                       receivedTime:
-                          (BLEConstants.offTimeReceivedFromBleDevice * 10)
+                          (BLEConstants.offTimeReceivedFromBleDevice / 10)
                               .toString(),
                     ),
                   ],
